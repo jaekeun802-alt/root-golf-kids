@@ -5,8 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d3524">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="루트 키즈">
+<meta name="application-name" content="루트 키즈">
 <title>루트골프아카데미 · 키즈 레슨노트</title>
+<meta name="description" content="루트골프아카데미 키즈 레슨노트 — 프로 3명이 함께 쓰는 아이들 레슨 기록. 회원, 레슨노트, 피드백을 한 곳에서.">
+<link rel="canonical" href="https://jaekeun802-alt.github.io/root-golf-kids/">
+
+<!-- icons & manifest -->
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+
+<!-- open graph / share preview -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="루트골프아카데미">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:url" content="https://jaekeun802-alt.github.io/root-golf-kids/">
+<meta property="og:title" content="루트골프아카데미 · 키즈 레슨노트">
+<meta property="og:description" content="프로 3명이 함께 쓰는 아이들 레슨 기록. 회원, 레슨노트, 피드백을 한 곳에서.">
+<meta property="og:image" content="https://jaekeun802-alt.github.io/root-golf-kids/assets/og-image.png">
+<meta property="og:image:secure_url" content="https://jaekeun802-alt.github.io/root-golf-kids/assets/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="루트골프아카데미 키즈 로고">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="루트골프아카데미 · 키즈 레슨노트">
+<meta name="twitter:description" content="프로 3명이 함께 쓰는 아이들 레슨 기록. 회원, 레슨노트, 피드백을 한 곳에서.">
+<meta name="twitter:image" content="https://jaekeun802-alt.github.io/root-golf-kids/assets/og-image.png">
 <style>
 :root{
   --green-950:#08251a;
@@ -59,10 +88,11 @@ button{font-family:inherit}
 .appbar-top{position:relative;z-index:1;display:flex;align-items:center;gap:10px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 .mark{
-  width:36px;height:36px;border-radius:11px;flex:none;display:grid;place-items:center;
-  background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.18);color:#dff4e7;
+  width:38px;height:38px;border-radius:12px;flex:none;display:grid;place-items:center;
+  padding:3px;background:#fff;
+  box-shadow:0 3px 10px rgba(4,24,15,.30),0 0 0 1px rgba(255,255,255,.55) inset;
 }
-.mark svg{width:21px;height:21px}
+.mark img{width:100%;height:100%;object-fit:contain;display:block}
 .brand-name{font-size:16px;font-weight:800;letter-spacing:-.025em;line-height:1.15}
 .brand-sub{font-size:8px;font-weight:700;letter-spacing:.2em;color:rgba(176,226,199,.72);margin-top:3px}
 .icon-btn{
@@ -421,10 +451,8 @@ form.invalid .input{border-color:#e0b3aa;background:#fdf7f5}
   <header class="appbar">
     <div class="appbar-top">
       <div class="brand">
-        <div class="mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6.6 21.4V2.8"/><path d="M6.6 3.6h9.2l-2.1 3.3 2.1 3.3H6.6z" fill="currentColor" stroke="none"/><circle cx="18.2" cy="18.6" r="1.7"/>
-          </svg>
+        <div class="mark">
+          <img src="assets/logo-mark.png" alt="루트골프아카데미 키즈" width="600" height="600" decoding="async">
         </div>
         <div>
           <div class="brand-name">루트골프아카데미</div>
