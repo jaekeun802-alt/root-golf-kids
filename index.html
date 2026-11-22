@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d3524">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>루트골프아카데미 · 키즈 레슨노트</title>
+<style>
+:root{
+  --green-950:#08251a;
+  --green-900:#0d3524;
+  --green-800:#124a30;
+  --green-700:#176b45;
+  --green-600:#1f8a57;
+  --mint-100:#e7f3ec;
+  --mint-50:#f3f9f5;
+  --ink:#12211a;
+  --ink-2:#45584e;
+  --ink-3:#7d8f85;
+  --line:#e3ebe5;
+  --bg:#f3f6f3;
+  --gold:#8a6a28;
+  --danger:#c2503f;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+  color:var(--ink);
+  background:radial-gradient(1200px 600px at 50% -10%,#eef4ef 0%,#e2eae3 45%,#d7e1da 100%);
+  display:flex;justify-content:center;
+  letter-spacing:-0.01em;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit}
+.phone{
+  position:relative;width:100%;max-width:430px;height:100vh;height:100dvh;
+  display:flex;flex-direction:column;overflow:hidden;
+  background:var(--bg);
+  box-shadow:0 24px 70px rgba(10,40,25,.18);
+}
+
+/* ---------- app bar ---------- */
+.appbar{
+  flex:none;position:relative;overflow:hidden;color:#fff;
+  background:linear-gradient(158deg,#0a2f21 0%,#11452c 55%,#17573a 100%);
+  padding:calc(15px + env(safe-area-inset-top)) 18px 14px;
+}
+.appbar::after{
+  content:"";position:absolute;right:-46px;top:-84px;width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(128,226,178,.22),rgba(128,226,178,0) 68%);
+}
+.appbar::before{
+  content:"";position:absolute;right:26px;bottom:-104px;width:180px;height:180px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.09);
+}
+.appbar-top{position:relative;z-index:1;display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.mark{
+  width:36px;height:36px;border-radius:11px;flex:none;display:grid;place-items:center;
+  background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.18);color:#dff4e7;
+}
+.mark svg{width:21px;height:21px}
+.brand-name{font-size:16px;font-weight:800;letter-spacing:-.025em;line-height:1.15}
+.brand-sub{font-size:8px;font-weight:700;letter-spacing:.2em;color:rgba(176,226,199,.72);margin-top:3px}
+.icon-btn{
+  margin-left:auto;width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.09);color:#dcefe2;display:grid;place-items:center;cursor:pointer;flex:none;
+}
+.icon-btn svg{width:16px;height:16px}
+.appbar-meta{position:relative;z-index:1;display:flex;align-items:center;gap:8px;margin-top:12px}
+.pill-internal{
+  display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+  font-size:10.5px;font-weight:700;color:#e6f7ec;white-space:nowrap;
+}
+.pill-internal svg{width:10px;height:10px;opacity:.85}
+.meta-text{font-size:10px;color:rgba(203,231,215,.72);margin-left:auto;white-space:nowrap;font-weight:500}
+
+/* ---------- main / views ---------- */
+.app{
+  flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  padding:16px 16px 18px;scrollbar-width:none;
+}
+.app::-webkit-scrollbar{display:none}
+.view{animation:fade .2s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.view-head{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-bottom:12px}
+.view-title{font-size:20px;font-weight:800;letter-spacing:-.035em;margin:0;line-height:1.2}
+.view-sub{font-size:11px;color:var(--ink-3);margin-top:4px}
+.count-pill{
+  flex:none;font-size:11px;font-weight:800;color:var(--green-700);
+  background:var(--mint-100);border:1px solid #d8ebdf;padding:5px 9px;border-radius:999px;
+}
+
+/* ---------- search & filters ---------- */
+.search-row{display:flex;gap:8px;margin-bottom:10px}
+.search-box{
+  flex:1;display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  box-shadow:0 1px 2px rgba(16,60,38,.035);
+}
+.search-box svg{width:15px;height:15px;color:#9fb0a6;flex:none}
+.search-box input{
+  flex:1;min-width:0;border:0;outline:0;background:transparent;
+  font-family:inherit;font-size:13.5px;color:var(--ink);letter-spacing:-.01em;
+}
+.search-box input::placeholder{color:#a9b8ae}
+.btn-add{
+  width:44px;height:44px;flex:none;border:0;border-radius:14px;cursor:pointer;
+  background:linear-gradient(150deg,#1c7f51,#135d3b);color:#fff;font-size:22px;line-height:1;
+  display:grid;place-items:center;box-shadow:0 7px 16px rgba(19,93,59,.26);
+}
+.btn-add:active{transform:scale(.96)}
+.filters{display:flex;flex-direction:column;gap:7px;margin-bottom:13px}
+.chip-row{display:flex;align-items:center;gap:7px;min-width:0}
+.chip-label{flex:none;width:26px;font-size:10px;font-weight:800;color:var(--ink-3)}
+.chips{
+  display:flex;gap:6px;overflow-x:auto;padding:2px 1px;scrollbar-width:none;
+  -webkit-mask-image:linear-gradient(to right,#000 0,#000 90%,transparent 100%);
+  mask-image:linear-gradient(to right,#000 0,#000 90%,transparent 100%);
+}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none;border:1px solid var(--line);background:#fff;color:var(--ink-2);
+  font-size:11px;font-weight:700;padding:6px 9px;border-radius:999px;cursor:pointer;
+  transition:background .15s,color .15s,border-color .15s;
+}
+.chip.on{background:var(--green-800);border-color:var(--green-800);color:#fff;box-shadow:0 3px 9px rgba(13,53,36,.22)}
+
+/* ---------- student cards ---------- */
+.student-card{
+  width:100%;display:flex;align-items:center;gap:12px;text-align:left;
+  background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px 12px;
+  margin-bottom:9px;cursor:pointer;box-shadow:0 1px 2px rgba(16,60,38,.035);
+  transition:transform .12s ease,box-shadow .15s ease;
+}
+.student-card:active{transform:scale(.985);box-shadow:0 3px 12px rgba(16,60,38,.09)}
+.avatar{
+  width:44px;height:44px;border-radius:14px;flex:none;display:grid;place-items:center;
+  font-weight:800;font-size:15px;color:#fff;letter-spacing:-.03em;
+  background:linear-gradient(145deg,var(--a1,#6aab8c),var(--a2,#36785c));
+  box-shadow:0 3px 8px rgba(20,70,45,.16);
+}
+.sc-main{flex:1;min-width:0}
+.sc-top{display:flex;align-items:center;gap:6px}
+.sc-name{font-size:14.5px;font-weight:800;letter-spacing:-.025em;color:var(--ink)}
+.lv-badge{
+  font-size:9.5px;font-weight:800;letter-spacing:.01em;padding:3px 6px;border-radius:6px;
+  background:var(--mint-100);color:var(--green-700);border:1px solid #d8ebdf;white-space:nowrap;
+}
+.sc-meta{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-3);margin-top:3px}
+.dot-sep{width:2px;height:2px;border-radius:50%;background:#c4d2c9;flex:none}
+.sc-recent{display:flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:var(--green-700);margin-top:6px}
+.sc-recent svg{width:10px;height:10px;opacity:.8}
+.sc-recent.none{color:#a6b5ab;font-weight:600}
+.chev{flex:none;color:#c2d0c7;font-size:18px;line-height:1;padding-right:2px}
+
+/* ---------- empty state ---------- */
+.empty{
+  text-align:center;padding:34px 18px;border:1px dashed #d5e2d9;border-radius:16px;
+  background:#fafcfa;color:var(--ink-3);font-size:12px;line-height:1.7;
+}
+.empty b{display:block;color:var(--ink-2);font-size:13px;margin-bottom:4px}
+.empty .btn{margin-top:12px}
+
+/* ---------- buttons ---------- */
+.btn{
+  border:0;border-radius:12px;font-size:12.5px;font-weight:800;padding:11px 14px;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  cursor:pointer;transition:transform .12s ease,background .15s;letter-spacing:-.01em;
+}
+.btn:active{transform:scale(.98)}
+.btn.solid{background:var(--green-800);color:#fff}
+.btn.line{background:#fff;border:1px solid var(--line);color:var(--ink-2)}
+.btn.danger{background:var(--danger);color:#fff}
+.btn.cream{background:#eafff2;color:#0d3b27;flex:1}
+.btn.glass{background:rgba(255,255,255,.1);color:#d9efe2;border:1px solid rgba(255,255,255,.17)}
+
+/* ---------- detail ---------- */
+.back-btn{
+  display:inline-flex;align-items:center;gap:5px;background:none;border:0;padding:3px 0;
+  color:var(--ink-2);font-size:12px;font-weight:700;margin-bottom:10px;cursor:pointer;
+}
+.back-btn svg{width:13px;height:13px}
+.profile-card{
+  position:relative;overflow:hidden;border-radius:20px;padding:16px;color:#fff;
+  background:linear-gradient(160deg,#0e3b28,#145236 55%,#17603f);
+  box-shadow:0 12px 28px rgba(15,63,42,.24);
+}
+.profile-card::after{
+  content:"";position:absolute;right:-40px;top:-60px;width:170px;height:170px;border-radius:50%;
+  background:radial-gradient(circle,rgba(140,232,182,.18),rgba(140,232,182,0) 70%);
+}
+.pc-head{position:relative;display:flex;align-items:center;gap:12px}
+.avatar.lg{width:54px;height:54px;border-radius:17px;font-size:18px;box-shadow:0 5px 14px rgba(0,0,0,.2)}
+.pc-id{min-width:0}
+.pc-name{display:flex;align-items:center;gap:6px;font-size:17px;font-weight:800;letter-spacing:-.03em}
+.pc-sex{font-size:9.5px;font-weight:800;color:#cdeedb;background:rgba(255,255,255,.14);padding:2px 6px;border-radius:5px}
+.pc-meta{font-size:11px;color:#a7cdb8;margin-top:4px}
+.pc-lv{
+  margin-left:auto;flex:none;font-size:11px;font-weight:800;letter-spacing:.02em;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);color:#effff6;
+  padding:5px 9px;border-radius:8px;
+}
+.pc-stats{position:relative;display:flex;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.13)}
+.pc-stat{flex:1;text-align:center;position:relative}
+.pc-stat + .pc-stat::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:1px;background:rgba(255,255,255,.1)}
+.pc-stat b{display:block;font-size:13.5px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.pc-stat span{display:block;font-size:9px;color:#9cc4ac;margin-top:3px;letter-spacing:.02em}
+.pc-actions{position:relative;display:flex;gap:8px;margin-top:14px}
+.pc-actions .btn{height:40px;border-radius:11px;font-size:12px}
+.tl-title{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;margin:20px 0 11px;color:var(--ink)}
+.tl-title .n{font-size:10px;font-weight:700;color:var(--ink-3)}
+.timeline{position:relative;padding-left:19px}
+.timeline::before{
+  content:"";position:absolute;left:4.5px;top:8px;bottom:10px;width:1.5px;
+  background:linear-gradient(#cfe3d6,#eaf2ec);
+}
+.tl-item{position:relative;padding-bottom:11px}
+.tl-item::before{
+  content:"";position:absolute;left:-19px;top:8px;width:9px;height:9px;border-radius:50%;
+  background:#fff;border:2px solid #8fbfa3;box-sizing:content-box;
+}
+.tl-item:first-child::before{border-color:var(--green-700);background:var(--green-700);box-shadow:0 0 0 3px #e3f1e9}
+.tl-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 1px 2px rgba(16,60,38,.03)}
+.tl-head{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:7px}
+.tl-date{font-size:11.5px;font-weight:800;color:var(--ink)}
+.pro-chip{
+  font-size:9.5px;font-weight:800;color:var(--green-700);background:var(--mint-50);
+  border:1px solid #dcebe2;padding:2px 6px;border-radius:6px;white-space:nowrap;
+}
+.tl-time{font-size:9.5px;color:#a9b8ae;margin-left:auto;font-weight:600}
+.tl-content{margin:0;font-size:12.5px;line-height:1.62;color:var(--ink-2);white-space:pre-wrap;word-break:keep-all}
+.next-note{margin-top:9px;padding:8px 10px;background:#f6faf7;border-left:2.5px solid #9ecfb2;border-radius:0 9px 9px 0}
+.next-note span{display:block;font-size:8.5px;font-weight:800;color:var(--green-700);letter-spacing:.06em;margin-bottom:3px}
+.next-note p{margin:0;font-size:11.5px;line-height:1.55;color:var(--ink-2);white-space:pre-wrap;word-break:keep-all}
+.change-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.change{
+  font-size:9.5px;font-weight:800;color:var(--gold);background:#fdf7e8;
+  border:1px solid #f0e3c2;padding:3px 7px;border-radius:6px;
+}
+
+/* ---------- feed ---------- */
+.scope-seg{display:flex;background:#e8efe9;border-radius:11px;padding:3px;margin-bottom:10px}
+.scope-seg button{
+  flex:1;border:0;background:transparent;font-size:12px;font-weight:800;color:var(--ink-3);
+  padding:8px 0;border-radius:8px;cursor:pointer;transition:background .15s,color .15s;
+}
+.scope-seg button.on{background:#fff;color:var(--green-800);box-shadow:0 1px 3px rgba(16,60,38,.12)}
+.feed-group{margin-bottom:15px}
+.feed-date{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;color:var(--ink-2);margin:0 0 8px}
+.feed-date .tag{
+  font-size:9px;font-weight:800;color:#fff;background:var(--green-700);
+  padding:2px 6px;border-radius:5px;letter-spacing:.02em;
+}
+.feed-date .n{margin-left:auto;font-size:9.5px;font-weight:700;color:#a9b8ae}
+.feed-card{
+  display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);
+  border-radius:14px;padding:12px;margin-bottom:8px;cursor:pointer;
+  box-shadow:0 1px 2px rgba(16,60,38,.03);transition:transform .12s ease;
+}
+.feed-card:active{transform:scale(.987)}
+.fc-head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.fc-name{font-size:12.5px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.lv-badge.sm{font-size:9px;padding:2px 5px}
+.fc-time{margin-left:auto;font-size:9.5px;color:#a9b8ae;font-weight:700}
+.fc-content{
+  margin:0;font-size:12px;line-height:1.58;color:var(--ink-2);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;
+}
+.fc-next{display:flex;gap:4px;align-items:flex-start;margin-top:7px;font-size:10.5px;font-weight:700;color:var(--green-700);line-height:1.5}
+.fc-next svg{width:11px;height:11px;flex:none;margin-top:2px}
+
+/* ---------- settings ---------- */
+.card{
+  background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;
+  margin-bottom:10px;box-shadow:0 1px 2px rgba(16,60,38,.03);
+}
+.card-title{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;margin:0 0 4px}
+.card-title svg{width:14px;height:14px;color:var(--green-700)}
+.card-hint{font-size:10.5px;line-height:1.6;color:var(--ink-3);margin:0 0 12px;word-break:keep-all}
+.pro-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.pro-num{
+  width:21px;height:21px;flex:none;border-radius:7px;display:grid;place-items:center;
+  background:var(--mint-100);color:var(--green-700);font-size:9.5px;font-weight:800;
+}
+.input{
+  width:100%;height:39px;border:1px solid var(--line);border-radius:10px;padding:0 11px;
+  font-family:inherit;font-size:13px;color:var(--ink);background:#fbfdfb;outline:none;
+  letter-spacing:-.01em;transition:border-color .15s,box-shadow .15s;
+}
+.input:focus{border-color:#8fc3a5;background:#fff;box-shadow:0 0 0 3px rgba(143,195,165,.18)}
+select.input{
+  appearance:none;-webkit-appearance:none;padding-right:30px;cursor:pointer;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237d8f85' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center;
+}
+textarea.input{height:auto;min-height:82px;padding:10px 11px;line-height:1.62;resize:vertical}
+.scope-list{display:flex;flex-direction:column;gap:7px}
+.scope-opt{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:11px;padding:10px;background:#fbfdfb}
+.scope-opt.active{border-color:#9ecfb2;background:#f2faf5}
+.scope-radio{width:15px;height:15px;flex:none;border-radius:50%;border:2px solid #c7d8cd;display:grid;place-items:center}
+.scope-opt.active .scope-radio{border-color:var(--green-700)}
+.scope-opt.active .scope-radio::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--green-700)}
+.scope-name{font-size:12px;font-weight:800;color:var(--ink)}
+.scope-desc{font-size:10px;color:var(--ink-3);margin-top:2px;line-height:1.45}
+.scope-opt.disabled{opacity:.62}
+.soon{flex:none;margin-left:auto;font-size:8.5px;font-weight:800;color:var(--gold);background:#fdf7e8;border:1px solid #f0e3c2;padding:2px 6px;border-radius:5px}
+.data-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11.5px;padding:8px 0;border-bottom:1px dashed #e8efe9;color:var(--ink-3)}
+.data-row:last-of-type{border-bottom:0}
+.data-row b{font-weight:800;color:var(--ink-2);text-align:right}
+.btn-row{display:flex;gap:8px;margin-top:11px}
+.btn-row .btn{flex:1;height:40px;font-size:12px}
+.app-foot{text-align:center;font-size:9.5px;color:#a9b8ae;padding:12px 0 2px;line-height:1.7}
+.app-foot b{color:#8fa397;font-weight:700}
+
+/* ---------- tab bar ---------- */
+.tabbar{
+  flex:none;display:flex;gap:2px;padding:7px 8px calc(7px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.97);border-top:1px solid var(--line);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.tab{
+  position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  border:0;background:none;padding:5px 0 4px;border-radius:11px;cursor:pointer;
+  color:#9aab9f;font-size:9.5px;font-weight:800;letter-spacing:-.01em;transition:color .15s;
+}
+.tab svg{width:20px;height:20px}
+.tab.on{color:var(--green-800)}
+.tab.on::before{
+  content:"";position:absolute;top:-7px;left:50%;transform:translateX(-50%);
+  width:22px;height:2.5px;border-radius:2px;background:var(--green-700);
+}
+.tab .badge{
+  position:absolute;top:3px;right:calc(50% - 18px);min-width:14px;height:14px;padding:0 3px;
+  border-radius:7px;background:var(--green-600);color:#fff;font-size:8.5px;font-weight:800;
+  display:grid;place-items:center;line-height:1;
+}
+
+/* ---------- sheet ---------- */
+.sheet-root{position:fixed;inset:0;z-index:60;display:none}
+.sheet-root.open{display:block}
+.sheet-backdrop{position:absolute;inset:0;background:rgba(6,26,17,.46);animation:bfade .2s ease}
+@keyframes bfade{from{opacity:0}to{opacity:1}}
+.sheet{
+  position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  width:100%;max-width:430px;max-height:91vh;max-height:91dvh;
+  display:flex;flex-direction:column;
+  background:#fff;border-radius:22px 22px 0 0;
+  box-shadow:0 -12px 44px rgba(6,26,17,.26);
+  animation:up .26s cubic-bezier(.2,.85,.25,1);
+}
+@keyframes up{from{transform:translateX(-50%) translateY(100%)}to{transform:translateX(-50%) translateY(0)}}
+.sheet-grab{width:38px;height:4px;border-radius:2px;background:#e2eae4;margin:9px auto 0;flex:none}
+.sheet-head{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 18px 8px}
+.sheet-title{font-size:15px;font-weight:800;letter-spacing:-.03em;margin:0}
+.sheet-x{
+  width:29px;height:29px;flex:none;border:0;border-radius:9px;background:#f2f6f3;
+  color:var(--ink-2);font-size:13px;cursor:pointer;display:grid;place-items:center;
+}
+.sheet-body{padding:4px 18px calc(18px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain}
+
+/* ---------- forms ---------- */
+.field{margin-bottom:12px}
+.field > .flabel{display:block;font-size:10.5px;font-weight:800;color:var(--ink-2);margin-bottom:6px;letter-spacing:.01em}
+.field-row{display:flex;gap:9px}
+.field-row .field{flex:1;min-width:0}
+.seg{display:flex;background:#f1f6f2;border-radius:10px;padding:3px;height:39px;gap:2px}
+.seg label{position:relative;flex:1;cursor:pointer}
+.seg input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.seg span{
+  display:flex;align-items:center;justify-content:center;height:33px;border-radius:8px;
+  font-size:12.5px;font-weight:800;color:var(--ink-3);
+}
+.seg input:checked + span{background:#fff;color:var(--green-800);box-shadow:0 1px 3px rgba(16,60,38,.12)}
+.lv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.lv-opt{position:relative}
+.lv-opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.lv-opt span{
+  display:block;text-align:center;padding:9px 0;border:1px solid var(--line);border-radius:9px;
+  background:#fbfdfb;font-size:11.5px;font-weight:800;color:var(--ink-2);
+}
+.lv-opt input:checked + span{background:var(--green-800);border-color:var(--green-800);color:#fff}
+.change-box{border:1px solid var(--line);border-radius:12px;padding:10px 11px;margin-bottom:12px;background:#fbfdfb}
+.switch-row{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:var(--ink-2);cursor:pointer}
+.switch-row input{width:16px;height:16px;accent-color:var(--green-700);margin:0;flex:none}
+.change-select{margin-top:9px}
+.change-select[hidden]{display:none}
+.form-err{display:none;font-size:10.5px;font-weight:700;color:var(--danger);margin-top:5px}
+form.invalid .form-err{display:block}
+form.invalid .input{border-color:#e0b3aa;background:#fdf7f5}
+.sheet-actions{display:flex;gap:8px;margin-top:16px}
+.sheet-actions .btn{flex:1;height:46px;border-radius:13px;font-size:13.5px}
+.sheet-actions .btn.line{color:var(--ink-3)}
+.confirm-msg{margin:2px 0 4px;font-size:12.5px;line-height:1.65;color:var(--ink-2);word-break:keep-all}
+.delete-link{
+  display:block;width:100%;margin-top:14px;padding:8px;border:0;background:none;
+  color:#b06a5c;font-size:11.5px;font-weight:800;cursor:pointer;
+}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:92px;transform:translate(-50%,8px);
+  background:rgba(10,40,27,.95);color:#fff;font-size:11.5px;font-weight:700;
+  padding:10px 16px;border-radius:999px;opacity:0;pointer-events:none;
+  transition:opacity .22s ease,transform .22s ease;z-index:90;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(6,26,17,.28);
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width:360px){
+  .meta-text{display:none}
+  .view-title{font-size:18.5px}
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header class="appbar">
+    <div class="appbar-top">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6.6 21.4V2.8"/><path d="M6.6 3.6h9.2l-2.1 3.3 2.1 3.3H6.6z" fill="currentColor" stroke="none"/><circle cx="18.2" cy="18.6" r="1.7"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">루트골프아카데미</div>
+          <div class="brand-sub">KIDS LESSON NOTE</div>
+        </div>
+      </div>
+      <button class="icon-btn" data-action="tab" data-tab="settings" aria-label="설정">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 8.9 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 8.9a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="appbar-meta">
+      <span class="pill-internal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/>
+        </svg>
+        프로 내부 전용
+      </span>
+      <span class="meta-text" id="metaCounts">프로 3명 · 키즈 8명</span>
+    </div>
+  </header>
+
+  <main class="app" id="app"></main>
+
+  <nav class="tabbar" aria-label="주요 메뉴">
+    <button class="tab on" data-action="tab" data-tab="students">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="8" r="3.1"/><path d="M3.6 19.4c0-3 2.4-5 5.4-5s5.4 2 5.4 5"/>
+        <path d="M16 5.7a3 3 0 0 1 0 5.6"/><path d="M17.6 14.7c1.9.5 3.4 2.3 3.4 4.7"/>
+      </svg>
+      키즈 회원
+    </button>
+    <button class="tab" data-action="tab" data-tab="feed">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4.5 6.5h15"/><path d="M4.5 12h15"/><path d="M4.5 17.5h9"/>
+      </svg>
+      레슨 피드
+      <span class="badge" id="feedBadge" hidden>0</span>
+    </button>
+    <button class="tab" data-action="tab" data-tab="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 7h10"/><path d="M18 7h2"/><path d="M4 12h4"/><path d="M12 12h8"/><path d="M4 17h10"/><path d="M18 17h2"/>
+        <circle cx="16" cy="7" r="1.8"/><circle cx="10" cy="12" r="1.8"/><circle cx="16" cy="17" r="1.8"/>
+      </svg>
+      설정
+    </button>
+  </nav>
+</div>
+
+<div class="sheet-root" id="sheetRoot" aria-hidden="true">
+  <div class="sheet-backdrop" data-action="close-sheet"></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="입력 창"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* =========================================================
+   상수
+   ========================================================= */
+var KEY = 'rootGolfKids.v1';
+var WD = ['일','월','화','수','목','금','토'];
+var CLUBS = ['개인','기초클럽','45','48','51','54','57','60'];
+var LEVELS = [1,2,3,4,5,6,7];
+var LV_COLORS = [
+  ['#7fb79b','#569b7b'],
+  ['#6aab8c','#45886a'],
+  ['#58997b','#36785c'],
+  ['#4a8b6d','#2a6a4e'],
+  ['#3d7d61','#1f5c42'],
+  ['#326f55','#174e37'],
+  ['#b39556','#8a6d31']
+];
+
+/* =========================================================
+   유틸
+   ========================================================= */
+function $(sel, root){ return (root || document).querySelector(sel); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function isoOf(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function todayISO(){ return isoOf(new Date()); }
+function parseISO(s){
+  var p = String(s || '').split('-').map(Number);
+  return new Date(p[0] || 1970, (p[1] || 1) - 1, p[2] || 1);
+}
+function shiftISO(n){
+  var d = new Date();
+  d.setHours(12,0,0,0);
+  d.setDate(d.getDate() - n);
+  return isoOf(d);
+}
+function dayDiff(iso){
+  return Math.round((parseISO(todayISO()) - parseISO(iso)) / 86400000);
+}
+function fmtMD(iso){
+  var d = parseISO(iso);
+  return (d.getMonth()+1)+'.'+pad(d.getDate());
+}
+function fmtMDW(iso){
+  var d = parseISO(iso);
+  return (d.getMonth()+1)+'.'+d.getDate()+' ('+WD[d.getDay()]+')';
+}
+function fmtFull(iso){
+  var d = parseISO(iso);
+  return (d.getMonth()+1)+'월 '+d.getDate()+'일 ('+WD[d.getDay()]+')';
+}
+function fmtRel(iso){
+  var n = dayDiff(iso);
+  if(n === 0) return '오늘';
+  if(n === 1) return '어제';
+  if(n > 1 && n < 7) return n+'일 전';
+  return fmtMDW(iso);
+}
+function fmtTime(ts){
+  var d = new Date(ts);
+  if(isNaN(d.getTime())) return '';
+  return pad(d.getHours())+':'+pad(d.getMinutes());
+}
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function uid(p){
+  return p + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+}
+function clubLabel(c){
+  if(c === '개인') return '개인클럽';
+  if(c === '기초클럽') return '기초클럽';
+  return c + '인치';
+}
+function proName(i){ return state.pros[i] || ('프로 ' + (i+1)); }
+function lvColor(lv){
+  var c = LV_COLORS[Math.min(6, Math.max(0, Number(lv) - 1))];
+  return '--a1:'+c[0]+';--a2:'+c[1];
+}
+function toast(msg){
+  var t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._tm);
+  toast._tm = setTimeout(function(){ t.classList.remove('show'); }, 2000);
+}
+
+/* =========================================================
+   샘플 데이터
+   ========================================================= */
+function makeTS(dateISO, hm){
+  var d = parseISO(dateISO);
+  var p = hm.split(':').map(Number);
+  d.setHours(p[0], p[1], 0, 0);
+  return d.toISOString();
+}
+
+function seedState(){
+  var students = [
+    {id:'s1', name:'김하준', age:7,  gender:'남', level:1, club:'기초클럽'},
+    {id:'s2', name:'이서윤', age:9,  gender:'여', level:2, club:'45'},
+    {id:'s3', name:'박도현', age:11, gender:'남', level:3, club:'48'},
+    {id:'s4', name:'최지유', age:13, gender:'여', level:4, club:'51'},
+    {id:'s5', name:'정민준', age:15, gender:'남', level:5, club:'54'},
+    {id:'s6', name:'강예린', age:17, gender:'여', level:6, club:'57'},
+    {id:'s7', name:'윤시우', age:19, gender:'남', level:7, club:'개인'},
+    {id:'s8', name:'한수아', age:6,  gender:'여', level:2, club:'60'}
+  ];
+
+  var rows = [
+    ['s1',0,0,'15:10',
+      '그립과 어드레스 자세를 다시 잡았습니다. 손목 힘을 빼고 채를 가볍게 쥐는 감을 잡았고, 7번 아이언으로 30m를 일정하게 보냅니다.',
+      '백스윙 때 왼팔이 일찍 접히는 습관이 있어요. 하프스윙 10회씩 3세트 연습해 오기.'],
+    ['s2',1,0,'13:30',
+      '퍼팅 그립이 안정적입니다. 3m 거리에서 방향보다 거리 감각에 집중했고, 10개 중 6개 홀인했습니다.',
+      '3·5·7m 거리별 퍼팅 5개씩. 어깨만 움직이고 손목은 고정하기.'],
+    ['s3',2,0,'11:00',
+      '드라이버 스윙 템포 교정. 백스윙이 빨라져 헤드가 열리는 문제를 메트로놈 60bpm에 맞춰 잡았습니다. 공이 오른쪽으로 밀리는 현상이 줄었어요.',
+      '티샷 전 루틴(그립-정렬-한 번 숨쉬기) 유지. 연습장 50구는 비거리 대신 템포 위주로.'],
+    ['s5',0,0,'10:00',
+      '30m 어프로치 샷. 클럽 페이스를 열고 열린 스탠스에서 부드럽게 내려치는 감을 익혔습니다. 10개 중 7개가 핀 3m 이내.',
+      '30·50m 거리 조절 연습. 볼을 오른발 뒤에 두고 내려치기, 손목 쓰지 않기.'],
+
+    ['s4',1,1,'16:20',
+      '아이언 정확도. 체중 이동이 왼발로 충분히 넘어가지 않는 점을 교정했습니다. 7번 아이언 100구 중 70구가 목표 방향.',
+      '하프스윙에서 체중 이동이 멈추는 동작 확인. 거울 보며 천천히 20회.'],
+    ['s6',2,1,'14:00',
+      '드라이버 비거리. 볼 위치를 왼발 뒤꿈치 쪽으로 옮기고 어퍼블로우로 치면서 캐리 160m까지 나왔습니다.',
+      '이번 주는 티 높이 고정. 페이드 구질은 다음 주에 시작해요.'],
+    ['s7',0,1,'10:30',
+      '라운드 대비 코스 매니지먼트. OB 구간에서 3번 우드 대신 5번 아이언을 선택하는 연습을 했습니다. 스스로 판단하는 속도가 빨라졌어요.',
+      '18홀 전반 전략 노트 작성해 오기. 티샷 클럽은 미리 정하고 고민 시간 줄이기.'],
+
+    ['s3',2,2,'15:00',
+      '클럽 길이 체크. 45인치가 살짝 짧아 스윙 궤도가 눌리는 경향이 있어 48인치로 교체했습니다. 새 클럽으로 7번 아이언 80구, 임팩트 소리가 확실히 달라졌어요.',
+      '새 클럽 적응 2주. 그립 끝까지 잡지 말고 1cm 여유 두기.',
+      {clubFrom:'45', clubTo:'48'}],
+    ['s5',1,2,'11:30',
+      '퍼팅 스트로크. 손목을 고정하고 진자 운동으로 치는 감을 잡았습니다. 5m에서 10개 중 7개 성공.',
+      '5m 퍼팅 20개씩 매일. 임팩트 후에 채를 멈추지 않기.'],
+
+    ['s8',0,3,'16:40',
+      '키가 자라 클럽이 짧아져 60인치로 교체했습니다. 어드레스에서 손 위치가 편해졌고 스윙 아크가 커졌어요.',
+      '새 클럽 하프스윙 적응. 어깨 회전 크게 가져가기.',
+      {clubFrom:'기초클럽', clubTo:'60'}],
+    ['s6',2,3,'13:00',
+      '벙커 탈출. 페이스를 열고 볼 뒤 2cm 지점을 치는 연습. 탈출 성공 8/10, 탄도도 낮게 나옵니다.',
+      '벙커에 들어가기 전 페이스 열고 스탠스 잡는 루틴화.'],
+
+    ['s4',1,5,'15:30',
+      '아이언 일관성이 많이 올라왔습니다. 5번 아이언까지 비거리 편차 8m 이내로 줄었어요. 필드 나갈 기본은 갖춰졌습니다.',
+      '구질 컨트롤(드로우/페이드) 들어가기. 그립 압력 일정하게 유지.'],
+    ['s7',0,5,'10:10',
+      '9번 아이언 정확도. 120m 캐리. 다만 탄도가 낮아 그린에서 멈추기 어렵습니다.',
+      '볼 뒤쪽을 공략해 탄도 높이기. 9번으로 50구.'],
+
+    ['s8',0,7,'16:00',
+      '그립과 스탠스 기본기를 통과해 Lv.2로 올렸습니다. 7번 아이언으로 40m를 일정하게 보냅니다. 집중력이 좋아요.',
+      'Lv.2 커리큘럼 시작: 아이언 스윙 궤도와 체중 이동.',
+      {levelFrom:1, levelTo:2}],
+    ['s2',1,7,'14:20',
+      '1m 숏퍼팅 집중. 백스윙 크기를 일정하게 유지하는 연습을 했습니다.',
+      '1m 20개 연속 넣기 도전. 실패하면 처음부터.'],
+
+    ['s1',2,10,'15:50',
+      '첫 레슨. 골프채 잡는 법, 안전 수칙, 기초 어드레스를 배웠습니다. 집중력이 좋고 질문을 잘해요.',
+      '집에서 그립 잡기 5분씩. 클럽은 어깨 높이까지만 들기.']
+  ];
+
+  var lessons = rows.map(function(r, i){
+    var date = shiftISO(r[2]);
+    var l = {
+      id: 'l' + (i+1),
+      studentId: r[0],
+      proIndex: r[1],
+      date: date,
+      content: r[4],
+      next: r[5],
+      visibility: 'internal',
+      createdAt: makeTS(date, r[3])
+    };
+    if(r[6]){
+      if(r[6].levelFrom != null){ l.levelFrom = r[6].levelFrom; l.levelTo = r[6].levelTo; }
+      if(r[6].clubFrom != null){ l.clubFrom = r[6].clubFrom; l.clubTo = r[6].clubTo; }
+    }
+    return l;
+  });
+
+  return {
+    version: 1,
+    pros: ['김민수 프로','이정우 프로','박서연 프로'],
+    students: students,
+    lessons: lessons,
+    share: { mode: 'internal', note: '프로 3명 내부 공유' },
+    updatedAt: new Date().toISOString()
+  };
+}
+
+/* =========================================================
+   저장 / 불러오기
+   ========================================================= */
+function persist(){
+  try{
+    localStorage.setItem(KEY, JSON.stringify(state));
+    return true;
+  }catch(e){
+    toast('저장 공간을 쓸 수 없어 이번 화면에만 유지됩니다');
+    return false;
+  }
+}
+
+function loadState(){
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(raw){
+      var d = JSON.parse(raw);
+      if(d && d.version === 1 && Array.isArray(d.students) && Array.isArray(d.lessons) && Array.isArray(d.pros)){
+        if(!d.share) d.share = { mode:'internal' };
+        return d;
+      }
+    }
+  }catch(e){}
+  var seeded = seedState();
+  try{ localStorage.setItem(KEY, JSON.stringify(seeded)); }catch(e){}
+  return seeded;
+}
+
+var state = loadState();
+var ui = {
+  tab: 'students',
+  studentId: null,
+  q: '',
+  level: 'all',
+  club: 'all',
+  feedScope: 'all',
+  feedPro: 'all',
+  confirmAction: null
+};
+
+/* =========================================================
+   조회 헬퍼
+   ========================================================= */
+function studentById(id){
+  for(var i=0;i<state.students.length;i++){
+    if(state.students[i].id === id) return state.students[i];
+  }
+  return null;
+}
+function lessonsOf(id){
+  return state.lessons.filter(function(l){ return l.studentId === id; });
+}
+function sortLessonsDesc(arr){
+  return arr.slice().sort(function(a,b){
+    if(a.date !== b.date) return a.date < b.date ? 1 : -1;
+    var x = a.createdAt || '', y = b.createdAt || '';
+    if(x === y) return 0;
+    return x < y ? 1 : -1;
+  });
+}
+function latestLesson(id){
+  var arr = sortLessonsDesc(lessonsOf(id));
+  return arr.length ? arr[0] : null;
+}
+function todayLessonCount(){
+  var t = todayISO();
+  return state.lessons.filter(function(l){ return l.date === t; }).length;
+}
+function filteredStudents(){
+  var q = ui.q.trim().toLowerCase();
+  var list = state.students.filter(function(s){
+    if(q && String(s.name).toLowerCase().indexOf(q) < 0) return false;
+    if(ui.level !== 'all' && Number(s.level) !== Number(ui.level)) return false;
+    if(ui.club !== 'all' && s.club !== ui.club) return false;
+    return true;
+  });
+  list.sort(function(a,b){
+    var la = latestLesson(a.id), lb = latestLesson(b.id);
+    var da = la ? la.date : '', db = lb ? lb.date : '';
+    if(da !== db) return da < db ? 1 : -1;
+    return String(a.name).localeCompare(String(b.name), 'ko');
+  });
+  return list;
+}
+
+/* =========================================================
+   공통 UI 조각
+   ========================================================= */
+function metaUpdate(){
+  $('#metaCounts').textContent = '프로 ' + state.pros.length + '명 · 키즈 ' + state.students.length + '명 · 오늘 ' + todayLessonCount() + '건';
+  var badge = $('#feedBadge');
+  var n = todayLessonCount();
+  if(n > 0){ badge.textContent = n; badge.hidden = false; }
+  else { badge.hidden = true; }
+  var tabs = document.querySelectorAll('.tab');
+  for(var i=0;i<tabs.length;i++){
+    var on = tabs[i].getAttribute('data-tab') === ui.tab;
+    tabs[i].classList.toggle('on', on);
+  }
+}
+
+function scrollTop(){ var a = $('#app'); if(a) a.scrollTop = 0; }
+
+function emptyBox(title, desc, actionHTML){
+  return '<div class="empty"><b>'+esc(title)+'</b>'+esc(desc)+(actionHTML||'')+'</div>';
+}
+
+/* =========================================================
+   회원 목록
+   ========================================================= */
+function studentsHTML(){
+  return '<section class="view">'
+    + '<div class="view-head">'
+    +   '<div><h1 class="view-title">키즈 회원</h1>'
+    +   '<div class="view-sub">프로 3명이 함께 보는 레슨 노트</div></div>'
+    +   '<span class="count-pill" id="listCount">'+filteredStudents().length+'명</span>'
+    + '</div>'
+    + '<div class="search-row">'
+    +   '<div class="search-box">'
+    +     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>'
+    +     '<input id="studentSearch" type="search" placeholder="이름으로 검색" autocomplete="off" value="'+esc(ui.q)+'">'
+    +   '</div>'
+    +   '<button class="btn-add" data-action="add-student" aria-label="새 회원 추가">+</button>'
+    + '</div>'
+    + '<div class="filters">'
+    +   '<div class="chip-row"><span class="chip-label">레벨</span><div class="chips">'
+    +     levelChipsHTML()
+    +   '</div></div>'
+    +   '<div class="chip-row"><span class="chip-label">클럽</span><div class="chips">'
+    +     clubChipsHTML()
+    +   '</div></div>'
+    + '</div>'
+    + '<div id="studentList">'+studentListHTML()+'</div>'
+    + '</section>';
+}
+
+function levelChipsHTML(){
+  var html = '<button class="chip '+(ui.level === 'all' ? 'on' : '')+'" data-action="filter-level" data-value="all">전체</button>';
+  LEVELS.forEach(function(lv){
+    html += '<button class="chip '+(String(ui.level) === String(lv) ? 'on' : '')+'" data-action="filter-level" data-value="'+lv+'">Lv.'+lv+'</button>';
+  });
+  return html;
+}
+
+function clubChipsHTML(){
+  var html = '<button class="chip '+(ui.club === 'all' ? 'on' : '')+'" data-action="filter-club" data-value="all">전체</button>';
+  CLUBS.forEach(function(c){
+    html += '<button class="chip '+(ui.club === c ? 'on' : '')+'" data-action="filter-club" data-value="'+esc(c)+'">'+esc(clubLabel(c))+'</button>';
+  });
+  return html;
+}
+
+function studentListHTML(){
+  var list = filteredStudents();
+  if(!list.length){
+    var hasFilter = ui.q || ui.level !== 'all' || ui.club !== 'all';
+    return emptyBox(
+      hasFilter ? '조건에 맞는 회원이 없어요' : '아직 등록된 회원이 없어요',
+      hasFilter ? '검색어나 필터를 바꿔 보세요.' : '오른쪽 위 + 버튼으로 첫 회원을 추가해 보세요.',
+      hasFilter ? '<button class="btn line" data-action="clear-filters">필터 초기화</button>' : ''
+    );
+  }
+  return list.map(function(s){
+    var last = latestLesson(s.id);
+    var recent = last
+      ? '<div class="sc-recent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>'
+        + fmtRel(last.date) + ' · ' + esc(proName(last.proIndex)) + '</div>'
+      : '<div class="sc-recent none">레슨 기록 없음</div>';
+    return '<button class="student-card" data-action="open-student" data-id="'+s.id+'">'
+      + '<div class="avatar" style="'+lvColor(s.level)+'">'+esc(String(s.name).slice(0,1))+'</div>'
+      + '<div class="sc-main">'
+      +   '<div class="sc-top"><span class="sc-name">'+esc(s.name)+'</span><span class="lv-badge">Lv.'+s.level+'</span></div>'
+      +   '<div class="sc-meta"><span>'+s.age+'세</span><span class="dot-sep"></span><span>'+esc(s.gender)+'</span><span class="dot-sep"></span><span>'+esc(clubLabel(s.club))+'</span></div>'
+      +   recent
+      + '</div>'
+      + '<div class="chev" aria-hidden="true">›</div>'
+      + '</button>';
+  }).join('');
+}
+
+/* =========================================================
+   회원 상세
+   ========================================================= */
+function detailHTML(){
+  var s = studentById(ui.studentId);
+  if(!s){
+    ui.studentId = null;
+    return studentsHTML();
+  }
+  var lessons = sortLessonsDesc(lessonsOf(s.id));
+  var last = lessons.length ? lessons[0] : null;
+
+  var html = '<section class="view">'
+    + '<button class="back-btn" data-action="back-students">'
+    +   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg>'
+    +   '키즈 회원'
+    + '</button>'
+    + '<div class="profile-card">'
+    +   '<div class="pc-head">'
+    +     '<div class="avatar lg" style="'+lvColor(s.level)+'">'+esc(String(s.name).slice(0,1))+'</div>'
+    +     '<div class="pc-id">'
+    +       '<div class="pc-name">'+esc(s.name)+'<span class="pc-sex">'+esc(s.gender)+'</span></div>'
+    +       '<div class="pc-meta">'+s.age+'세 · '+esc(clubLabel(s.club))+'</div>'
+    +     '</div>'
+    +     '<span class="pc-lv">Lv.'+s.level+'</span>'
+    +   '</div>'
+    +   '<div class="pc-stats">'
+    +     '<div class="pc-stat"><b>'+lessons.length+'</b><span>레슨 기록</span></div>'
+    +     '<div class="pc-stat"><b>'+(last ? fmtMDW(last.date) : '—')+'</b><span>최근 레슨</span></div>'
+    +     '<div class="pc-stat"><b>'+(last ? esc(proName(last.proIndex)) : '—')+'</b><span>최근 담당</span></div>'
+    +   '</div>'
+    +   '<div class="pc-actions">'
+    +     '<button class="btn cream" data-action="add-lesson" data-id="'+s.id+'">+ 레슨 기록</button>'
+    +     '<button class="btn glass" data-action="edit-student" data-id="'+s.id+'">프로필 수정</button>'
+    +   '</div>'
+    + '</div>'
+    + '<div class="tl-title">레슨 타임라인 <span class="n">'+lessons.length+'건</span></div>'
+    + '<div class="timeline">';
+
+  if(!lessons.length){
+    html += '</div>' + emptyBox('아직 레슨 기록이 없어요', '첫 레슨을 남기면 다음 프로가 바로 이어받을 수 있어요.');
+  }else{
+    html += lessons.map(lessonTimelineHTML).join('') + '</div>';
+  }
+
+  html += '</section>';
+  return html;
+}
+
+function lessonTimelineHTML(l){
+  var badges = '';
+  if(l.levelFrom != null && l.levelTo != null){
+    badges += '<span class="change">레벨 Lv.'+l.levelFrom+' → Lv.'+l.levelTo+'</span>';
+  }
+  if(l.clubFrom != null && l.clubTo != null){
+    badges += '<span class="change">클럽 '+esc(clubLabel(l.clubFrom))+' → '+esc(clubLabel(l.clubTo))+'</span>';
+  }
+  return '<div class="tl-item">'
+    + '<div class="tl-card">'
+    +   '<div class="tl-head">'
+    +     '<span class="tl-date">'+fmtMDW(l.date)+'</span>'
+    +     '<span class="pro-chip">'+esc(proName(l.proIndex))+'</span>'
+    +     '<span class="tl-time">'+fmtTime(l.createdAt)+'</span>'
+    +   '</div>'
+    +   '<p class="tl-content">'+esc(l.content)+'</p>'
+    +   (l.next ? '<div class="next-note"><span>다음 수업 인계</span><p>'+esc(l.next)+'</p></div>' : '')
+    +   (badges ? '<div class="change-badges">'+badges+'</div>' : '')
+    + '</div>'
+    + '</div>';
+}
+
+/* =========================================================
+   레슨 피드
+   ========================================================= */
+function feedHTML(){
+  var html = '<section class="view">'
+    + '<div class="view-head">'
+    +   '<div><h1 class="view-title">레슨 피드</h1>'
+    +   '<div class="view-sub">프로 '+state.pros.length+'명이 남긴 최근 기록</div></div>'
+    +   '<span class="count-pill" id="feedCount">—</span>'
+    + '</div>'
+    + '<div class="scope-seg">'
+    +   '<button class="'+(ui.feedScope === 'all' ? 'on' : '')+'" data-action="feed-scope" data-value="all">전체 기록</button>'
+    +   '<button class="'+(ui.feedScope === 'today' ? 'on' : '')+'" data-action="feed-scope" data-value="today">오늘</button>'
+    + '</div>'
+    + '<div class="chip-row" style="margin-bottom:13px"><span class="chip-label">프로</span><div class="chips">'
+    +   '<button class="chip '+(ui.feedPro === 'all' ? 'on' : '')+'" data-action="feed-pro" data-value="all">전체</button>'
+    +   state.pros.map(function(p, i){
+          return '<button class="chip '+(String(ui.feedPro) === String(i) ? 'on' : '')+'" data-action="feed-pro" data-value="'+i+'">'+esc(p)+'</button>';
+        }).join('')
+    + '</div></div>'
+    + '<div id="feedList">' + feedListHTML() + '</div>'
+    + '</section>';
+  return html;
+}
+
+function feedLessons(){
+  var list = state.lessons.filter(function(l){
+    if(ui.feedScope === 'today' && dayDiff(l.date) !== 0) return false;
+    if(ui.feedPro !== 'all' && Number(l.proIndex) !== Number(ui.feedPro)) return false;
+    return true;
+  });
+  return sortLessonsDesc(list);
+}
+
+function feedListHTML(){
+  var list = feedLessons();
+
+  if(!list.length){
+    return emptyBox('표시할 기록이 없어요', ui.feedScope === 'today' ? '오늘 남긴 레슨 기록이 아직 없습니다.' : '레슨을 기록하면 여기에 시간순으로 쌓입니다.');
+  }
+
+  var groups = [];
+  var map = {};
+  list.forEach(function(l){
+    if(!map[l.date]){ map[l.date] = []; groups.push(l.date); }
+    map[l.date].push(l);
+  });
+
+  return groups.map(function(date){
+    var items = map[date];
+    var tag = dayDiff(date) === 0 ? '<span class="tag">오늘</span>' : (dayDiff(date) === 1 ? '<span class="tag" style="background:#5c7f6c">어제</span>' : '');
+    var head = '<div class="feed-date">' + tag + fmtFull(date) + '<span class="n">'+items.length+'건</span></div>';
+    var cards = items.map(function(l){
+      var s = studentById(l.studentId);
+      var name = s ? s.name : '삭제된 회원';
+      var lv = s ? '<span class="lv-badge sm">Lv.'+s.level+'</span>' : '';
+      return '<button class="feed-card" data-action="open-student" data-id="'+esc(l.studentId)+'">'
+        + '<div class="fc-head">'
+        +   '<span class="pro-chip">'+esc(proName(l.proIndex))+'</span>'
+        +   '<span class="fc-name">'+esc(name)+'</span>'
+        +   lv
+        +   '<span class="fc-time">'+fmtTime(l.createdAt)+'</span>'
+        + '</div>'
+        + '<p class="fc-content">'+esc(l.content)+'</p>'
+        + (l.next ? '<div class="fc-next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"/><path d="M12.5 6l6 6-6 6"/></svg><span>'+esc(l.next)+'</span></div>' : '')
+        + '</button>';
+    }).join('');
+    return '<div class="feed-group">'+head+cards+'</div>';
+  }).join('');
+}
+
+/* =========================================================
+   설정
+   ========================================================= */
+function settingsHTML(){
+  var proRows = state.pros.map(function(p, i){
+    return '<div class="pro-row">'
+      + '<span class="pro-num">'+(i+1)+'</span>'
+      + '<input class="input" type="text" name="pro'+i+'" value="'+esc(p)+'" maxlength="16" placeholder="프로 이름" aria-label="프로 '+(i+1)+' 이름">'
+      + '</div>';
+  }).join('');
+
+  return '<section class="view">'
+    + '<div class="view-head"><div><h1 class="view-title">설정</h1>'
+    + '<div class="view-sub">레슨 노트 운영에 필요한 항목</div></div></div>'
+
+    + '<div class="card">'
+    +   '<h2 class="card-title">담당 프로</h2>'
+    +   '<p class="card-hint">레슨 기록에 표시될 프로 이름입니다. 세 분의 이름을 자유롭게 바꿀 수 있어요.</p>'
+    +   '<form id="prosForm">'+proRows
+    +     '<div class="btn-row"><button type="submit" class="btn solid">이름 저장</button></div>'
+    +   '</form>'
+    + '</div>'
+
+    + '<div class="card">'
+    +   '<h2 class="card-title">공유 범위</h2>'
+    +   '<p class="card-hint">지금은 프로님들끼리만 보는 내부 공유로 운영됩니다. 기록마다 공개 범위 값이 함께 저장되어, 나중에 선택 공유를 켤 때 그대로 이어 쓸 수 있습니다.</p>'
+    +   '<div class="scope-list">'
+    +     '<div class="scope-opt active">'
+    +       '<span class="scope-radio"></span>'
+    +       '<div><div class="scope-name">프로 내부 전용</div><div class="scope-desc">프로 '+state.pros.length+'명만 열람 · 모든 기록 visibility: internal</div></div>'
+    +     '</div>'
+    +     '<div class="scope-opt disabled">'
+    +       '<span class="scope-radio"></span>'
+    +       '<div><div class="scope-name">학부모 선택 공유</div><div class="scope-desc">아이별로 고른 기록만 학부모에게</div></div>'
+    +       '<span class="soon">준비 중</span>'
+    +     '</div>'
+    +     '<div class="scope-opt disabled">'
+    +       '<span class="scope-radio"></span>'
+    +       '<div><div class="scope-name">링크 공유</div><div class="scope-desc">만료되는 링크로 특정 기록만 전달</div></div>'
+    +       '<span class="soon">준비 중</span>'
+    +     '</div>'
+    +   '</div>'
+    + '</div>'
+
+    + '<div class="card">'
+    +   '<h2 class="card-title">데이터</h2>'
+    +   '<p class="card-hint">이 기기 브라우저에만 저장됩니다. 서버로 전송되지 않아요.</p>'
+    +   '<div class="data-row"><span>저장 위치</span><b>이 브라우저 (localStorage)</b></div>'
+    +   '<div class="data-row"><span>등록 회원</span><b>'+state.students.length+'명</b></div>'
+    +   '<div class="data-row"><span>레슨 기록</span><b>'+state.lessons.length+'건</b></div>'
+    +   '<div class="btn-row">'
+    +     '<button class="btn line" data-action="export-data">JSON 내보내기</button>'
+    +     '<button class="btn line" data-action="reset-data">샘플로 초기화</button>'
+    +   '</div>'
+    + '</div>'
+
+    + '<div class="app-foot"><b>루트골프아카데미 키즈 레슨노트</b><br>프로 내부 전용 · v1.0 · 오프라인 사용 가능</div>'
+    + '</section>';
+}
+
+/* =========================================================
+   시트(모달)
+   ========================================================= */
+function openSheet(title, bodyHTML){
+  var root = $('#sheetRoot');
+  var sheet = $('#sheet');
+  sheet.innerHTML = '<div class="sheet-grab"></div>'
+    + '<div class="sheet-head"><h2 class="sheet-title">'+esc(title)+'</h2>'
+    + '<button class="sheet-x" data-action="close-sheet" aria-label="닫기">✕</button></div>'
+    + '<div class="sheet-body">'+bodyHTML+'</div>';
+  root.classList.add('open');
+  root.setAttribute('aria-hidden','false');
+}
+function closeSheet(){
+  var root = $('#sheetRoot');
+  root.classList.remove('open');
+  root.setAttribute('aria-hidden','true');
+  var sheet = $('#sheet');
+  sheet.innerHTML = '';
+  ui.confirmAction = null;
+}
+
+function studentFormHTML(s){
+  var editing = !!s;
+  var name = s ? s.name : '';
+  var age = s ? s.age : 9;
+  var gender = s ? s.gender : '남';
+  var level = s ? s.level : 1;
+  var club = s ? s.club : '기초클럽';
+
+  var ageOpts = '';
+  for(var a=6;a<=19;a++){
+    ageOpts += '<option value="'+a+'"'+(Number(age) === a ? ' selected' : '')+'>'+a+'세</option>';
+  }
+  var clubOpts = CLUBS.map(function(c){
+    return '<option value="'+esc(c)+'"'+(club === c ? ' selected' : '')+'>'+esc(clubLabel(c))+'</option>';
+  }).join('');
+  var lvOpts = LEVELS.map(function(lv){
+    return '<label class="lv-opt"><input type="radio" name="level" value="'+lv+'"'+(Number(level) === lv ? ' checked' : '')+'><span>Lv.'+lv+'</span></label>';
+  }).join('');
+
+  return '<form id="studentForm" data-id="'+esc(s ? s.id : '')+'" novalidate>'
+    + '<div class="field"><label class="flabel" for="stName">이름</label>'
+    +   '<input class="input" id="stName" type="text" name="name" value="'+esc(name)+'" placeholder="회원 이름" maxlength="12" autocomplete="off">'
+    +   '<div class="form-err">이름을 입력해 주세요.</div>'
+    + '</div>'
+    + '<div class="field-row">'
+    +   '<div class="field"><label class="flabel" for="stAge">나이</label><select class="input" id="stAge" name="age">'+ageOpts+'</select></div>'
+    +   '<div class="field"><label class="flabel">성별</label><div class="seg">'
+    +     '<label><input type="radio" name="gender" value="남"'+(gender === '남' ? ' checked' : '')+'><span>남</span></label>'
+    +     '<label><input type="radio" name="gender" value="여"'+(gender === '여' ? ' checked' : '')+'><span>여</span></label>'
+    +   '</div></div>'
+    + '</div>'
+    + '<div class="field"><label class="flabel">레벨</label><div class="lv-grid">'+lvOpts+'</div></div>'
+    + '<div class="field"><label class="flabel" for="stClub">클럽</label><select class="input" id="stClub" name="club">'+clubOpts+'</select></div>'
+    + '<div class="sheet-actions">'
+    +   '<button type="button" class="btn line" data-action="close-sheet">취소</button>'
+    +   '<button type="submit" class="btn solid">'+(editing ? '변경 저장' : '회원 추가')+'</button>'
+    + '</div>'
+    + (editing ? '<button type="button" class="delete-link" data-action="delete-student" data-id="'+esc(s.id)+'">이 회원 삭제</button>' : '')
+    + '</form>';
+}
+
+function openStudentSheet(id){
+  var s = id ? studentById(id) : null;
+  openSheet(s ? '프로필 수정' : '새 회원 추가', studentFormHTML(s));
+}
+
+function lessonFormHTML(s){
+  var nextLv = Math.min(7, Number(s.level) + 1);
+  var lvOpts = LEVELS.map(function(lv){
+    return '<option value="'+lv+'"'+(lv === nextLv ? ' selected' : '')+'>Lv.'+lv+'</option>';
+  }).join('');
+  var clubOpts = CLUBS.map(function(c){
+    return '<option value="'+esc(c)+'"'+(c === s.club ? ' selected' : '')+'>'+esc(clubLabel(c))+'</option>';
+  }).join('');
+  var proOpts = state.pros.map(function(p, i){
+    return '<option value="'+i+'">'+esc(p)+'</option>';
+  }).join('');
+
+  return '<form id="lessonForm" data-id="'+esc(s.id)+'" novalidate>'
+    + '<div class="field-row">'
+    +   '<div class="field"><label class="flabel" for="lsDate">날짜</label><input class="input" id="lsDate" type="date" name="date" value="'+todayISO()+'"></div>'
+    +   '<div class="field"><label class="flabel" for="lsPro">담당 프로</label><select class="input" id="lsPro" name="pro">'+proOpts+'</select></div>'
+    + '</div>'
+    + '<div class="field"><label class="flabel" for="lsContent">수업 내용 / 피드백</label>'
+    +   '<textarea class="input" id="lsContent" name="content" rows="4" placeholder="오늘 가르친 내용, 아이의 반응과 달라진 점"></textarea>'
+    +   '<div class="form-err">수업 내용을 적어 주세요.</div>'
+    + '</div>'
+    + '<div class="field"><label class="flabel" for="lsNext">다음 수업 인계 포인트</label>'
+    +   '<textarea class="input" id="lsNext" name="next" rows="3" placeholder="다음에 이어서 볼 내용"></textarea>'
+    + '</div>'
+    + '<div class="change-box">'
+    +   '<label class="switch-row"><input type="checkbox" id="levelChangeChk" name="levelChange"><span>레벨 변경 (현재 Lv.'+s.level+')</span></label>'
+    +   '<div class="change-select" id="levelChangeWrap" hidden><select class="input" name="newLevel">'+lvOpts+'</select></div>'
+    + '</div>'
+    + '<div class="change-box">'
+    +   '<label class="switch-row"><input type="checkbox" id="clubChangeChk" name="clubChange"><span>클럽 변경 (현재 '+esc(clubLabel(s.club))+')</span></label>'
+    +   '<div class="change-select" id="clubChangeWrap" hidden><select class="input" name="newClub">'+clubOpts+'</select></div>'
+    + '</div>'
+    + '<div class="sheet-actions">'
+    +   '<button type="button" class="btn line" data-action="close-sheet">취소</button>'
+    +   '<button type="submit" class="btn solid">기록 저장</button>'
+    + '</div>'
+    + '</form>';
+}
+
+function openLessonSheet(id){
+  var s = studentById(id);
+  if(!s) return;
+  openSheet(s.name + ' · 레슨 기록', lessonFormHTML(s));
+}
+
+function openConfirm(opts){
+  ui.confirmAction = opts.onConfirm || null;
+  var body = '<p class="confirm-msg">'+esc(opts.message)+'</p>'
+    + '<div class="sheet-actions">'
+    +   '<button type="button" class="btn line" data-action="close-sheet">취소</button>'
+    +   '<button type="button" class="btn '+(opts.danger ? 'danger' : 'solid')+'" data-action="confirm-yes">'+esc(opts.confirmLabel || '확인')+'</button>'
+    + '</div>';
+  openSheet(opts.title, body);
+}
+
+/* =========================================================
+   렌더
+   ========================================================= */
+function render(opts){
+  opts = opts || {};
+  metaUpdate();
+  var app = $('#app');
+  var html;
+  if(ui.tab === 'students') html = ui.studentId ? detailHTML() : studentsHTML();
+  else if(ui.tab === 'feed') html = feedHTML();
+  else html = settingsHTML();
+  app.innerHTML = html;
+  if(ui.tab === 'feed'){
+    var el = document.getElementById('feedCount');
+    if(el) el.textContent = feedLessons().length + '건';
+  }
+  if(opts.scroll !== false) scrollTop();
+}
+
+/* =========================================================
+   이벤트
+   ========================================================= */
+document.addEventListener('click', function(e){
+  var t = e.target.closest ? e.target.closest('[data-action]') : null;
+  if(!t) return;
+  var a = t.getAttribute('data-action');
+
+  if(a === 'tab'){
+    var tab = t.getAttribute('data-tab');
+    if(tab === ui.tab && tab === 'students' && ui.studentId){ ui.studentId = null; render(); return; }
+    ui.tab = tab;
+    ui.studentId = null;
+    render();
+    return;
+  }
+  if(a === 'open-student'){
+    ui.studentId = t.getAttribute('data-id');
+    ui.tab = 'students';
+    render();
+    return;
+  }
+  if(a === 'back-students'){
+    ui.studentId = null;
+    render();
+    return;
+  }
+  if(a === 'add-student'){ openStudentSheet(null); return; }
+  if(a === 'edit-student'){ openStudentSheet(t.getAttribute('data-id') || ui.studentId); return; }
+  if(a === 'add-lesson'){ openLessonSheet(t.getAttribute('data-id') || ui.studentId); return; }
+  if(a === 'close-sheet'){ closeSheet(); return; }
+
+  if(a === 'filter-level'){
+    ui.level = t.getAttribute('data-value');
+    render({scroll:false});
+    return;
+  }
+  if(a === 'filter-club'){
+    ui.club = t.getAttribute('data-value');
+    render({scroll:false});
+    return;
+  }
+  if(a === 'clear-filters'){
+    ui.q = ''; ui.level = 'all'; ui.club = 'all';
+    render({scroll:false});
+    return;
+  }
+  if(a === 'feed-scope'){
+    ui.feedScope = t.getAttribute('data-value');
+    render();
+    return;
+  }
+  if(a === 'feed-pro'){
+    ui.feedPro = t.getAttribute('data-value');
+    render();
+    return;
+  }
+
+  if(a === 'export-data'){ exportData(); return; }
+
+  if(a === 'reset-data'){
+    openConfirm({
+      title: '샘플 데이터로 초기화',
+      message: '이 브라우저에 저장된 회원과 레슨 기록이 모두 지워지고, 처음 열었을 때의 샘플 8명으로 돌아갑니다. 되돌릴 수 없어요.',
+      confirmLabel: '초기화',
+      danger: true,
+      onConfirm: function(){
+        state = seedState();
+        persist();
+        ui.studentId = null;
+        ui.q = ''; ui.level = 'all'; ui.club = 'all';
+        ui.feedScope = 'all'; ui.feedPro = 'all';
+        render();
+        toast('샘플 데이터로 초기화했어요');
+      }
+    });
+    return;
+  }
+
+  if(a === 'delete-student'){
+    var id = t.getAttribute('data-id');
+    var s = studentById(id);
+    if(!s) return;
+    openConfirm({
+      title: '회원 삭제',
+      message: s.name + ' 회원과 이 회원의 레슨 기록 ' + lessonsOf(id).length + '건이 함께 삭제됩니다. 되돌릴 수 없어요.',
+      confirmLabel: '삭제',
+      danger: true,
+      onConfirm: function(){
+        state.students = state.students.filter(function(x){ return x.id !== id; });
+        state.lessons = state.lessons.filter(function(l){ return l.studentId !== id; });
+        persist();
+        ui.studentId = null;
+        render();
+        toast('회원을 삭제했어요');
+      }
+    });
+    return;
+  }
+
+  if(a === 'confirm-yes'){
+    var fn = ui.confirmAction;
+    ui.confirmAction = null;
+    closeSheet();
+    if(typeof fn === 'function') fn();
+    return;
+  }
+});
+
+document.addEventListener('input', function(e){
+  if(e.target && e.target.id === 'studentSearch'){
+    ui.q = e.target.value;
+    var list = document.getElementById('studentList');
+    if(list) list.innerHTML = studentListHTML();
+    var cnt = document.getElementById('listCount');
+    if(cnt) cnt.textContent = filteredStudents().length + '명';
+  }
+});
+
+document.addEventListener('change', function(e){
+  if(e.target && e.target.id === 'levelChangeChk'){
+    var w = document.getElementById('levelChangeWrap');
+    if(w) w.hidden = !e.target.checked;
+  }
+  if(e.target && e.target.id === 'clubChangeChk'){
+    var w2 = document.getElementById('clubChangeWrap');
+    if(w2) w2.hidden = !e.target.checked;
+  }
+});
+
+document.addEventListener('submit', function(e){
+  var form = e.target;
+  if(!form || !form.id) return;
+
+  if(form.id === 'studentForm'){
+    e.preventDefault();
+    handleStudentSubmit(form);
+    return;
+  }
+  if(form.id === 'lessonForm'){
+    e.preventDefault();
+    handleLessonSubmit(form);
+    return;
+  }
+  if(form.id === 'prosForm'){
+    e.preventDefault();
+    handleProsSubmit(form);
+    return;
+  }
+});
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeSheet();
+});
+
+/* ---------- submit handlers ---------- */
+function handleStudentSubmit(form){
+  var fd = new FormData(form);
+  var name = String(fd.get('name') || '').trim();
+  form.classList.remove('invalid');
+  if(!name){
+    form.classList.add('invalid');
+    var input = form.querySelector('input[name="name"]');
+    if(input) input.focus();
+    return;
+  }
+  var age = Number(fd.get('age')) || 9;
+  var gender = fd.get('gender') === '여' ? '여' : '남';
+  var level = Number(fd.get('level')) || 1;
+  var club = String(fd.get('club') || '기초클럽');
+  if(CLUBS.indexOf(club) < 0) club = '기초클럽';
+
+  var id = form.getAttribute('data-id');
+  if(id){
+    var s = studentById(id);
+    if(!s) return;
+    s.name = name; s.age = age; s.gender = gender; s.level = level; s.club = club;
+    persist();
+    closeSheet();
+    render();
+    toast('프로필을 저장했어요');
+  }else{
+    var ns = { id: uid('s'), name: name, age: age, gender: gender, level: level, club: club };
+    state.students.push(ns);
+    persist();
+    closeSheet();
+    ui.tab = 'students';
+    ui.studentId = ns.id;
+    render();
+    toast(ns.name + ' 회원을 추가했어요');
+  }
+}
+
+function handleLessonSubmit(form){
+  var fd = new FormData(form);
+  var id = form.getAttribute('data-id');
+  var s = studentById(id);
+  if(!s) return;
+
+  var content = String(fd.get('content') || '').trim();
+  form.classList.remove('invalid');
+  if(!content){
+    form.classList.add('invalid');
+    var ta = form.querySelector('textarea[name="content"]');
+    if(ta) ta.focus();
+    return;
+  }
+
+  var date = String(fd.get('date') || '');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) date = todayISO();
+
+  var proIndex = Number(fd.get('pro'));
+  if(isNaN(proIndex) || proIndex < 0 || proIndex >= state.pros.length) proIndex = 0;
+
+  var now = new Date();
+  var ts = new Date(date + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':00').toISOString();
+
+  var lesson = {
+    id: uid('l'),
+    studentId: s.id,
+    proIndex: proIndex,
+    date: date,
+    content: content,
+    next: String(fd.get('next') || '').trim(),
+    visibility: 'internal',
+    createdAt: ts
+  };
+
+  var notes = [];
+
+  if(fd.get('levelChange')){
+    var nl = Number(fd.get('newLevel'));
+    if(nl >= 1 && nl <= 7 && nl !== Number(s.level)){
+      lesson.levelFrom = Number(s.level);
+      lesson.levelTo = nl;
+      s.level = nl;
+      notes.push('Lv.' + nl + '로 업데이트');
+    }
+  }
+  if(fd.get('clubChange')){
+    var nc = String(fd.get('newClub'));
+    if(CLUBS.indexOf(nc) >= 0 && nc !== s.club){
+      lesson.clubFrom = s.club;
+      lesson.clubTo = nc;
+      s.club = nc;
+      notes.push(clubLabel(nc) + '로 업데이트');
+    }
+  }
+
+  state.lessons.push(lesson);
+  persist();
+  closeSheet();
+  render();
+  toast(notes.length ? '레슨 기록 저장 · ' + notes.join(' · ') : '레슨 기록을 저장했어요');
+}
+
+function handleProsSubmit(form){
+  var fd = new FormData(form);
+  var names = [];
+  for(var i=0;i<state.pros.length;i++){
+    var v = String(fd.get('pro'+i) || '').trim();
+    if(!v){
+      toast('프로 이름을 모두 입력해 주세요');
+      var el = form.querySelector('input[name="pro'+i+'"]');
+      if(el) el.focus();
+      return;
+    }
+    names.push(v.slice(0, 16));
+  }
+  state.pros = names;
+  persist();
+  render();
+  toast('프로 이름을 저장했어요');
+}
+
+/* ---------- export ---------- */
+function exportData(){
+  try{
+    var blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'root-golf-kids-data.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+    toast('데이터를 JSON으로 내려받았어요');
+  }catch(err){
+    toast('내보내기에 실패했어요');
+  }
+}
+
+/* =========================================================
+   시작
+   ========================================================= */
+render();
+})();
+</script>
+</body>
+</html>
