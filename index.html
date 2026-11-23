@@ -107,6 +107,15 @@ button{font-family:inherit}
   font-size:10.5px;font-weight:700;color:#e6f7ec;white-space:nowrap;
 }
 .pill-internal svg{width:10px;height:10px;opacity:.85}
+.pill-status{
+  display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+  font-size:10.5px;font-weight:700;color:#e6f7ec;white-space:nowrap;
+}
+.pill-status i{width:6px;height:6px;border-radius:50%;background:#efc86b;flex:none;box-shadow:0 0 0 2px rgba(239,200,107,.2)}
+.pill-status.ok i{background:#6ff0a8;box-shadow:0 0 0 2px rgba(111,240,168,.26)}
+.pill-status.err i{background:#ff9b86;box-shadow:0 0 0 2px rgba(255,155,134,.24)}
+.pill-status.off i{background:#b9c7bd;box-shadow:none}
 .meta-text{font-size:10px;color:rgba(203,231,215,.72);margin-left:auto;white-space:nowrap;font-weight:500}
 
 /* ---------- main / views ---------- */
@@ -467,6 +476,7 @@ form.invalid .input{border-color:#e0b3aa;background:#fdf7f5}
       </button>
     </div>
     <div class="appbar-meta">
+      <span class="pill-status" id="dbStatus"><i></i><span id="dbStatusText">DB 연결 중</span></span>
       <span class="pill-internal">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/>
@@ -510,6 +520,7 @@ form.invalid .input{border-color:#e0b3aa;background:#fdf7f5}
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
 'use strict';
@@ -752,6 +763,240 @@ var ui = {
   feedPro: 'all',
   confirmAction: null
 };
+
+/* =========================================================
+   실시간 공유 DB (Supabase) — 프로 3명이 같은 데이터를 봄
+   ========================================================= */
+var SB_URL = 'https://ynwftvlflobmewhztrsh.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlud2Z0dmxmbG9ibWV3aHp0cnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUzODg0NTgsImV4cCI6MjExMDk2NDQ1OH0.J3iQ9f7Wmgp0jjHqzeXmCgNEaeM0EbMSLruA-ejNoi4';
+var sb = (window.supabase && typeof window.supabase.createClient === 'function')
+  ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: false, autoRefreshToken: false } })
+  : null;
+var dbUi = { status: 'connecting', label: 'DB 연결 중', pullTimer: null, seedTried: false, lastSync: null };
+
+function setDbStatus(kind, text){
+  dbUi.status = kind;
+  dbUi.label = text;
+  var el = document.getElementById('dbStatus');
+  if(el) el.className = 'pill-status' + (kind === 'connecting' ? '' : ' ' + kind);
+  var t = document.getElementById('dbStatusText');
+  if(t) t.textContent = text;
+  var t2 = document.getElementById('dbStateText');
+  if(t2) t2.textContent = text;
+}
+
+function studentRow(s){
+  return {
+    id: s.id,
+    name: s.name,
+    age: Number(s.age) || null,
+    gender: s.gender || null,
+    level: Number(s.level) || null,
+    club: s.club || '기초클럽',
+    memo: s.memo || null,
+    updated_at: new Date().toISOString()
+  };
+}
+function lessonRow(l){
+  return {
+    id: l.id,
+    student_id: l.studentId,
+    pro_index: Number(l.proIndex) || 0,
+    coach: (typeof proName === 'function' ? proName(l.proIndex) : null),
+    lesson_date: l.date,
+    content: l.content,
+    next_point: l.next || null,
+    visibility: l.visibility || 'internal',
+    level_from: l.levelFrom == null ? null : Number(l.levelFrom),
+    level_to: l.levelTo == null ? null : Number(l.levelTo),
+    club_from: l.clubFrom || null,
+    club_to: l.clubTo || null,
+    created_at: l.createdAt || new Date().toISOString()
+  };
+}
+function rowStudent(r){
+  return { id: r.id, name: r.name, age: r.age, gender: r.gender, level: r.level, club: r.club, memo: r.memo || '' };
+}
+function rowLesson(r){
+  return {
+    id: r.id,
+    studentId: r.student_id,
+    proIndex: r.pro_index,
+    date: r.lesson_date,
+    content: r.content,
+    next: r.next_point || '',
+    visibility: r.visibility || 'internal',
+    createdAt: r.created_at,
+    levelFrom: r.level_from,
+    levelTo: r.level_to,
+    clubFrom: r.club_from,
+    clubTo: r.club_to
+  };
+}
+
+async function ensureSeed(){
+  if(dbUi.seedTried) return false;
+  dbUi.seedTried = true;
+  try{
+    var seed = seedState();
+    var claim = await sb.from('settings').insert({ key: 'app', value: { version: 1, pros: seed.pros, share: seed.share } });
+    if(claim.error) return false;
+    var s1 = await sb.from('students').upsert(seed.students.map(studentRow), { onConflict: 'id' });
+    var s2 = await sb.from('lessons').upsert(seed.lessons.map(lessonRow), { onConflict: 'id' });
+    return !s1.error && !s2.error;
+  }catch(e){
+    return false;
+  }
+}
+
+async function pullAll(opts){
+  opts = opts || {};
+  if(!sb){ setDbStatus('off', '기기 저장 모드'); return false; }
+  try{
+    var res = await Promise.all([
+      sb.from('students').select('*'),
+      sb.from('lessons').select('*'),
+      sb.from('settings').select('*').eq('key', 'app').limit(1)
+    ]);
+    var err = res[0].error || res[1].error || res[2].error;
+    if(err) throw err;
+    var cfg = (res[2].data && res[2].data[0]) || null;
+    if(!cfg){
+      var seeded = await ensureSeed();
+      if(seeded && !opts._retry) return pullAll({ _retry: true, silent: opts.silent });
+    }else{
+      state.students = (res[0].data || []).map(rowStudent);
+      state.lessons = (res[1].data || []).map(rowLesson);
+      var v = cfg.value || {};
+      if(Array.isArray(v.pros) && v.pros.length === 3) state.pros = v.pros;
+      if(v.share) state.share = v.share;
+      state.updatedAt = new Date().toISOString();
+      persist();
+    }
+    setDbStatus('ok', '실시간 DB 연결됨');
+    dbUi.lastSync = new Date();
+    if(opts.silent) metaUpdate(); else refreshUI();
+    return true;
+  }catch(err){
+    setDbStatus('err', 'DB 끊김 · 기기 저장');
+    if(!opts.silent) metaUpdate();
+    return false;
+  }
+}
+
+function refreshUI(){
+  var root = document.getElementById('sheetRoot');
+  if(root && root.classList.contains('open')){ metaUpdate(); return; }
+  var app = document.getElementById('app');
+  var y = app ? app.scrollTop : 0;
+  var focused = document.activeElement;
+  var isSearch = focused && focused.id === 'studentSearch';
+  var caret = isSearch ? focused.selectionStart : null;
+  render({ scroll: false });
+  if(app) app.scrollTop = y;
+  if(isSearch){
+    var inp = document.getElementById('studentSearch');
+    if(inp){ inp.focus(); try{ inp.setSelectionRange(caret, caret); }catch(e){} }
+  }
+}
+
+function queuePull(){
+  clearTimeout(dbUi.pullTimer);
+  dbUi.pullTimer = setTimeout(function(){ pullAll(); }, 300);
+}
+
+function subscribeRealtime(){
+  if(!sb) return;
+  var ch = sb.channel('kids-lesson-sync');
+  ['students', 'lessons', 'settings'].forEach(function(tbl){
+    ch.on('postgres_changes', { event: '*', schema: 'public', table: tbl }, function(){ queuePull(); });
+  });
+  ch.subscribe(function(status){
+    if(status === 'SUBSCRIBED'){
+      setDbStatus('ok', '실시간 DB 연결됨');
+      pullAll();
+    }else if(status === 'CHANNEL_ERROR' || status === 'TIMED_OUT'){
+      setDbStatus('err', '실시간 연결 끊김');
+    }else if(status === 'CLOSED'){
+      setDbStatus('off', '기기 저장 모드');
+    }
+  });
+}
+
+async function dbSaveStudent(s){
+  if(!sb) return;
+  try{
+    var r = await sb.from('students').upsert(studentRow(s), { onConflict: 'id' });
+    if(r.error) throw r.error;
+    setDbStatus('ok', '실시간 DB 연결됨');
+  }catch(err){
+    setDbStatus('err', 'DB 저장 실패 · 기기 저장');
+    toast('공유 DB 저장 실패 · 이 기기에만 저장했어요');
+  }
+}
+
+async function dbDeleteStudent(id){
+  if(!sb) return;
+  try{
+    var r = await sb.from('students').delete().eq('id', id);
+    if(r.error) throw r.error;
+    setDbStatus('ok', '실시간 DB 연결됨');
+  }catch(err){
+    setDbStatus('err', 'DB 삭제 실패');
+    toast('공유 DB 삭제에 실패했어요');
+  }
+}
+
+async function dbSaveLesson(l, s){
+  if(!sb) return;
+  try{
+    var r = await sb.from('lessons').upsert(lessonRow(l), { onConflict: 'id' });
+    if(r.error) throw r.error;
+    if(s){
+      var r2 = await sb.from('students').upsert(studentRow(s), { onConflict: 'id' });
+      if(r2.error) throw r2.error;
+    }
+    setDbStatus('ok', '실시간 DB 연결됨');
+  }catch(err){
+    setDbStatus('err', 'DB 저장 실패 · 기기 저장');
+    toast('공유 DB 저장 실패 · 이 기기에만 저장했어요');
+  }
+}
+
+async function dbSaveSettings(){
+  if(!sb) return;
+  try{
+    var r = await sb.from('settings').upsert({
+      key: 'app',
+      value: { version: 1, pros: state.pros, share: state.share || { mode: 'internal' } },
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'key' });
+    if(r.error) throw r.error;
+    setDbStatus('ok', '실시간 DB 연결됨');
+  }catch(err){
+    setDbStatus('err', 'DB 저장 실패');
+    toast('설정 저장 실패 · 이 기기에만 저장했어요');
+  }
+}
+
+async function dbResetToSeed(){
+  if(!sb) return;
+  try{
+    var d1 = await sb.from('lessons').delete().neq('id', '');
+    if(d1.error) throw d1.error;
+    var d2 = await sb.from('students').delete().neq('id', '');
+    if(d2.error) throw d2.error;
+    var seed = seedState();
+    var i1 = await sb.from('students').upsert(seed.students.map(studentRow), { onConflict: 'id' });
+    if(i1.error) throw i1.error;
+    var i2 = await sb.from('lessons').upsert(seed.lessons.map(lessonRow), { onConflict: 'id' });
+    if(i2.error) throw i2.error;
+    setDbStatus('ok', '실시간 DB 연결됨');
+  }catch(err){
+    setDbStatus('err', 'DB 초기화 실패');
+    toast('공유 DB 초기화에 실패했어요');
+  }
+}
 
 /* =========================================================
    조회 헬퍼
@@ -1081,8 +1326,9 @@ function settingsHTML(){
 
     + '<div class="card">'
     +   '<h2 class="card-title">데이터</h2>'
-    +   '<p class="card-hint">이 기기 브라우저에만 저장됩니다. 서버로 전송되지 않아요.</p>'
-    +   '<div class="data-row"><span>저장 위치</span><b>이 브라우저 (localStorage)</b></div>'
+    +   '<p class="card-hint">프로 3명이 같은 데이터를 실시간으로 함께 봅니다. Supabase 무료 프로젝트(root-golf-kids · 서울 리전)에 저장되고, 이 기기에는 오프라인용 사본만 남습니다.</p>'
+    +   '<div class="data-row"><span>저장 위치</span><b>실시간 공유 DB (Supabase)</b></div>'
+    +   '<div class="data-row"><span>실시간 연결</span><b id="dbStateText">'+esc(dbUi.label || '연결 중')+'</b></div>'
     +   '<div class="data-row"><span>등록 회원</span><b>'+state.students.length+'명</b></div>'
     +   '<div class="data-row"><span>레슨 기록</span><b>'+state.lessons.length+'건</b></div>'
     +   '<div class="btn-row">'
@@ -1091,7 +1337,7 @@ function settingsHTML(){
     +   '</div>'
     + '</div>'
 
-    + '<div class="app-foot"><b>루트골프아카데미 키즈 레슨노트</b><br>프로 내부 전용 · v1.0 · 오프라인 사용 가능</div>'
+    + '<div class="app-foot"><b>루트골프아카데미 키즈 레슨노트</b><br>프로 내부 전용 · v1.1 · 실시간 공유 DB 연동</div>'
     + '</section>';
 }
 
@@ -1300,7 +1546,7 @@ document.addEventListener('click', function(e){
   if(a === 'reset-data'){
     openConfirm({
       title: '샘플 데이터로 초기화',
-      message: '이 브라우저에 저장된 회원과 레슨 기록이 모두 지워지고, 처음 열었을 때의 샘플 8명으로 돌아갑니다. 되돌릴 수 없어요.',
+      message: '모든 프로가 함께 쓰는 공유 DB에서 회원과 레슨 기록이 모두 지워지고, 처음 열었을 때의 샘플 8명으로 돌아갑니다. 되돌릴 수 없어요.',
       confirmLabel: '초기화',
       danger: true,
       onConfirm: function(){
@@ -1311,6 +1557,7 @@ document.addEventListener('click', function(e){
         ui.feedScope = 'all'; ui.feedPro = 'all';
         render();
         toast('샘플 데이터로 초기화했어요');
+        dbResetToSeed();
       }
     });
     return;
@@ -1332,6 +1579,7 @@ document.addEventListener('click', function(e){
         ui.studentId = null;
         render();
         toast('회원을 삭제했어요');
+        dbDeleteStudent(id);
       }
     });
     return;
@@ -1418,6 +1666,7 @@ function handleStudentSubmit(form){
     closeSheet();
     render();
     toast('프로필을 저장했어요');
+    dbSaveStudent(s);
   }else{
     var ns = { id: uid('s'), name: name, age: age, gender: gender, level: level, club: club };
     state.students.push(ns);
@@ -1427,6 +1676,7 @@ function handleStudentSubmit(form){
     ui.studentId = ns.id;
     render();
     toast(ns.name + ' 회원을 추가했어요');
+    dbSaveStudent(ns);
   }
 }
 
@@ -1491,6 +1741,7 @@ function handleLessonSubmit(form){
   closeSheet();
   render();
   toast(notes.length ? '레슨 기록 저장 · ' + notes.join(' · ') : '레슨 기록을 저장했어요');
+  dbSaveLesson(lesson, s);
 }
 
 function handleProsSubmit(form){
@@ -1510,6 +1761,7 @@ function handleProsSubmit(form){
   persist();
   render();
   toast('프로 이름을 저장했어요');
+  dbSaveSettings();
 }
 
 /* ---------- export ---------- */
@@ -1534,6 +1786,13 @@ function exportData(){
    시작
    ========================================================= */
 render();
+if(sb){
+  setDbStatus('connecting', 'DB 연결 중');
+  pullAll();
+  subscribeRealtime();
+}else{
+  setDbStatus('off', '기기 저장 모드');
+}
 })();
 </script>
 </body>
