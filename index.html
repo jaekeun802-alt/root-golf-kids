@@ -281,6 +281,16 @@ button{font-family:inherit}
   font-size:9.5px;font-weight:800;color:var(--gold);background:#fdf7e8;
   border:1px solid #f0e3c2;padding:3px 7px;border-radius:6px;
 }
+.edit-btn{
+  display:inline-flex;align-items:center;gap:3px;flex:none;
+  border:1px solid #dbe8df;background:#f7fbf8;color:var(--green-700);
+  font-size:9.5px;font-weight:800;padding:4px 7px;border-radius:7px;cursor:pointer;
+  letter-spacing:-.01em;transition:background .15s,border-color .15s;
+}
+.edit-btn svg{width:10px;height:10px;flex:none}
+.edit-btn:active{background:#e7f3ec;border-color:#bfdccc}
+.edit-note{font-size:10px;line-height:1.6;color:var(--ink-3);margin:2px 0 0;word-break:keep-all}
+.feed-card .edit-btn{margin-left:0}
 
 /* ---------- feed ---------- */
 .scope-seg{display:flex;background:#e8efe9;border-radius:11px;padding:3px;margin-bottom:10px}
@@ -963,6 +973,21 @@ async function dbSaveLesson(l, s){
   }
 }
 
+async function dbUpdateLesson(l){
+  if(!sb) return false;
+  try{
+    var r = await sb.from('lessons').update(lessonRow(l)).eq('id', l.id).select('id');
+    if(r.error) throw r.error;
+    if(!r.data || !r.data.length) throw new Error('update blocked or row missing');
+    setDbStatus('ok', '실시간 DB 연결됨');
+    return true;
+  }catch(err){
+    setDbStatus('err', 'DB 수정 실패 · 기기 저장');
+    toast('공유 DB 수정 실패 · 이 기기에만 반영했어요');
+    return false;
+  }
+}
+
 async function dbSaveSettings(){
   if(!sb) return;
   try{
@@ -1201,6 +1226,10 @@ function lessonTimelineHTML(l){
     +     '<span class="tl-date">'+fmtMDW(l.date)+'</span>'
     +     '<span class="pro-chip">'+esc(proName(l.proIndex))+'</span>'
     +     '<span class="tl-time">'+fmtTime(l.createdAt)+'</span>'
+    +     '<button class="edit-btn" data-action="edit-lesson" data-id="'+esc(l.id)+'" aria-label="이 레슨 기록 수정">'
+    +       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10a2.5 2.5 0 0 0-3.5-3.5L4.5 16.5 4 20z"/></svg>'
+    +       '<span>수정</span>'
+    +     '</button>'
     +   '</div>'
     +   '<p class="tl-content">'+esc(l.content)+'</p>'
     +   (l.next ? '<div class="next-note"><span>다음 수업 인계</span><p>'+esc(l.next)+'</p></div>' : '')
@@ -1265,16 +1294,19 @@ function feedListHTML(){
       var s = studentById(l.studentId);
       var name = s ? s.name : '삭제된 회원';
       var lv = s ? '<span class="lv-badge sm">Lv.'+s.level+'</span>' : '';
-      return '<button class="feed-card" data-action="open-student" data-id="'+esc(l.studentId)+'">'
+      return '<div class="feed-card" role="button" tabindex="0" data-action="open-student" data-id="'+esc(l.studentId)+'">'
         + '<div class="fc-head">'
         +   '<span class="pro-chip">'+esc(proName(l.proIndex))+'</span>'
         +   '<span class="fc-name">'+esc(name)+'</span>'
         +   lv
         +   '<span class="fc-time">'+fmtTime(l.createdAt)+'</span>'
+        +   '<button class="edit-btn" data-action="edit-lesson" data-id="'+esc(l.id)+'" aria-label="이 레슨 기록 수정">'
+        +     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10a2.5 2.5 0 0 0-3.5-3.5L4.5 16.5 4 20z"/></svg><span>수정</span>'
+        +   '</button>'
         + '</div>'
         + '<p class="fc-content">'+esc(l.content)+'</p>'
         + (l.next ? '<div class="fc-next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"/><path d="M12.5 6l6 6-6 6"/></svg><span>'+esc(l.next)+'</span></div>' : '')
-        + '</button>';
+        + '</div>';
     }).join('');
     return '<div class="feed-group">'+head+cards+'</div>';
   }).join('');
@@ -1337,7 +1369,7 @@ function settingsHTML(){
     +   '</div>'
     + '</div>'
 
-    + '<div class="app-foot"><b>루트골프아카데미 키즈 레슨노트</b><br>프로 내부 전용 · v1.1 · 실시간 공유 DB 연동</div>'
+    + '<div class="app-foot"><b>루트골프아카데미 키즈 레슨노트</b><br>프로 내부 전용 · v1.2 · 실시간 공유 DB · 레슨 기록 수정 지원</div>'
     + '</section>';
 }
 
@@ -1454,6 +1486,80 @@ function openLessonSheet(id){
   openSheet(s.name + ' · 레슨 기록', lessonFormHTML(s));
 }
 
+function lessonEditFormHTML(l, s){
+  var proOpts = state.pros.map(function(p, i){
+    return '<option value="'+i+'"'+(Number(l.proIndex) === i ? ' selected' : '')+'>'+esc(p)+'</option>';
+  }).join('');
+  var lvSel = function(v){
+    return LEVELS.map(function(lv){
+      return '<option value="'+lv+'"'+(Number(v) === lv ? ' selected' : '')+'>Lv.'+lv+'</option>';
+    }).join('');
+  };
+  var clubSel = function(v){
+    return CLUBS.map(function(c){
+      return '<option value="'+esc(c)+'"'+(v === c ? ' selected' : '')+'>'+esc(clubLabel(c))+'</option>';
+    }).join('');
+  };
+  var hasLv = (l.levelFrom != null && l.levelTo != null);
+  var hasClub = (l.clubFrom != null && l.clubTo != null);
+  var lvFrom = hasLv ? Number(l.levelFrom) : Number(s.level);
+  var lvTo = hasLv ? Number(l.levelTo) : Math.min(7, Number(s.level) + 1);
+  var clubFrom = hasClub ? l.clubFrom : s.club;
+  var clubTo = hasClub ? l.clubTo : s.club;
+
+  return '<form id="lessonEditForm" data-id="'+esc(l.id)+'" data-sid="'+esc(l.studentId)+'" novalidate>'
+    + '<div class="field-row">'
+    +   '<div class="field"><label class="flabel" for="edDate">날짜</label><input class="input" id="edDate" type="date" name="date" value="'+esc(l.date)+'"></div>'
+    +   '<div class="field"><label class="flabel" for="edPro">담당 프로</label><select class="input" id="edPro" name="pro">'+proOpts+'</select></div>'
+    + '</div>'
+    + '<div class="field"><label class="flabel" for="edContent">수업 내용 / 피드백</label>'
+    +   '<textarea class="input" id="edContent" name="content" rows="5">'+esc(l.content)+'</textarea>'
+    +   '<div class="form-err">수업 내용을 적어 주세요.</div>'
+    + '</div>'
+    + '<div class="field"><label class="flabel" for="edNext">다음 수업 인계 포인트</label>'
+    +   '<textarea class="input" id="edNext" name="next" rows="3" placeholder="다음에 이어서 볼 내용">'+esc(l.next || '')+'</textarea>'
+    + '</div>'
+    + '<div class="change-box">'
+    +   '<label class="switch-row"><input type="checkbox" id="edLevelChk" name="levelChange"'+(hasLv ? ' checked' : '')+'><span>레벨 변경 기록 (현재 Lv.'+s.level+')</span></label>'
+    +   '<div class="change-select" id="edLevelWrap"'+(hasLv ? '' : ' hidden')+'>'
+    +     '<div class="field-row">'
+    +       '<div class="field"><label class="flabel" for="edLevelFrom">변경 전</label><select class="input" id="edLevelFrom" name="levelFrom">'+lvSel(lvFrom)+'</select></div>'
+    +       '<div class="field"><label class="flabel" for="edLevelTo">변경 후</label><select class="input" id="edLevelTo" name="levelTo">'+lvSel(lvTo)+'</select></div>'
+    +     '</div>'
+    +   '</div>'
+    + '</div>'
+    + '<div class="change-box">'
+    +   '<label class="switch-row"><input type="checkbox" id="edClubChk" name="clubChange"'+(hasClub ? ' checked' : '')+'><span>클럽 변경 기록 (현재 '+esc(clubLabel(s.club))+')</span></label>'
+    +   '<div class="change-select" id="edClubWrap"'+(hasClub ? '' : ' hidden')+'>'
+    +     '<div class="field-row">'
+    +       '<div class="field"><label class="flabel" for="edClubFrom">변경 전</label><select class="input" id="edClubFrom" name="clubFrom">'+clubSel(clubFrom)+'</select></div>'
+    +       '<div class="field"><label class="flabel" for="edClubTo">변경 후</label><select class="input" id="edClubTo" name="clubTo">'+clubSel(clubTo)+'</select></div>'
+    +     '</div>'
+    +   '</div>'
+    + '</div>'
+    + '<p class="edit-note">고친 내용은 프로 '+state.pros.length+'명에게 실시간으로 함께 반영됩니다. 처음 쓴 시각('+fmtMDW(l.date)+' '+fmtTime(l.createdAt)+')은 그대로 남아요.</p>'
+    + '<div class="sheet-actions">'
+    +   '<button type="button" class="btn line" data-action="close-sheet">취소</button>'
+    +   '<button type="submit" class="btn solid">변경 저장</button>'
+    + '</div>'
+    + '</form>';
+}
+
+function lessonById(id){
+  for(var i=0;i<state.lessons.length;i++){
+    if(state.lessons[i].id === id) return state.lessons[i];
+  }
+  return null;
+}
+
+function openLessonEditSheet(id){
+  var l = lessonById(id);
+  if(!l){ toast('레슨 기록을 찾지 못했어요'); return; }
+  var s = studentById(l.studentId);
+  if(!s){ toast('회원 정보를 찾지 못했어요'); return; }
+  openSheet(s.name + ' · 레슨 기록 수정', lessonEditFormHTML(l, s));
+}
+
 function openConfirm(opts){
   ui.confirmAction = opts.onConfirm || null;
   var body = '<p class="confirm-msg">'+esc(opts.message)+'</p>'
@@ -1513,6 +1619,7 @@ document.addEventListener('click', function(e){
   if(a === 'add-student'){ openStudentSheet(null); return; }
   if(a === 'edit-student'){ openStudentSheet(t.getAttribute('data-id') || ui.studentId); return; }
   if(a === 'add-lesson'){ openLessonSheet(t.getAttribute('data-id') || ui.studentId); return; }
+  if(a === 'edit-lesson'){ openLessonEditSheet(t.getAttribute('data-id')); return; }
   if(a === 'close-sheet'){ closeSheet(); return; }
 
   if(a === 'filter-level'){
@@ -1613,6 +1720,14 @@ document.addEventListener('change', function(e){
     var w2 = document.getElementById('clubChangeWrap');
     if(w2) w2.hidden = !e.target.checked;
   }
+  if(e.target && e.target.id === 'edLevelChk'){
+    var w3 = document.getElementById('edLevelWrap');
+    if(w3) w3.hidden = !e.target.checked;
+  }
+  if(e.target && e.target.id === 'edClubChk'){
+    var w4 = document.getElementById('edClubWrap');
+    if(w4) w4.hidden = !e.target.checked;
+  }
 });
 
 document.addEventListener('submit', function(e){
@@ -1627,6 +1742,11 @@ document.addEventListener('submit', function(e){
   if(form.id === 'lessonForm'){
     e.preventDefault();
     handleLessonSubmit(form);
+    return;
+  }
+  if(form.id === 'lessonEditForm'){
+    e.preventDefault();
+    handleLessonEditSubmit(form);
     return;
   }
   if(form.id === 'prosForm'){
@@ -1742,6 +1862,87 @@ function handleLessonSubmit(form){
   render();
   toast(notes.length ? '레슨 기록 저장 · ' + notes.join(' · ') : '레슨 기록을 저장했어요');
   dbSaveLesson(lesson, s);
+}
+
+/* 가장 최근의 레벨/클럽 변경 기록 값을 찾는다 */
+function lastChangeOf(studentId, key){
+  var arr = sortLessonsDesc(lessonsOf(studentId)).filter(function(x){ return x[key] != null; });
+  return arr.length ? arr[0][key] : null;
+}
+
+function handleLessonEditSubmit(form){
+  var fd = new FormData(form);
+  var id = form.getAttribute('data-id');
+  var l = lessonById(id);
+  if(!l) return;
+  var s = studentById(l.studentId);
+  if(!s) return;
+
+  var content = String(fd.get('content') || '').trim();
+  form.classList.remove('invalid');
+  if(!content){
+    form.classList.add('invalid');
+    var ta = form.querySelector('textarea[name="content"]');
+    if(ta) ta.focus();
+    return;
+  }
+
+  var date = String(fd.get('date') || '');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) date = l.date || todayISO();
+
+  var proIndex = Number(fd.get('pro'));
+  if(isNaN(proIndex) || proIndex < 0 || proIndex >= state.pros.length) proIndex = Number(l.proIndex) || 0;
+
+  var oldLevelTo = (l.levelFrom != null && l.levelTo != null) ? Number(l.levelTo) : null;
+  var oldClubTo = (l.clubFrom != null && l.clubTo != null) ? l.clubTo : null;
+
+  var newLevelFrom = null, newLevelTo = null;
+  if(fd.get('levelChange')){
+    var lf = Number(fd.get('levelFrom')), lt = Number(fd.get('levelTo'));
+    if(!(lf >= 1 && lf <= 7)) lf = null;
+    if(!(lt >= 1 && lt <= 7)) lt = null;
+    if(lf != null && lt != null){
+      if(lf === lt){ toast('변경 전과 후 레벨이 같아요'); return; }
+      newLevelFrom = lf; newLevelTo = lt;
+    }
+  }
+
+  var newClubFrom = null, newClubTo = null;
+  if(fd.get('clubChange')){
+    var cf = String(fd.get('clubFrom') || ''), ct = String(fd.get('clubTo') || '');
+    if(CLUBS.indexOf(cf) < 0) cf = null;
+    if(CLUBS.indexOf(ct) < 0) ct = null;
+    if(cf && ct){
+      if(cf === ct){ toast('변경 전과 후 클럽이 같아요'); return; }
+      newClubFrom = cf; newClubTo = ct;
+    }
+  }
+
+  l.date = date;
+  l.proIndex = proIndex;
+  l.content = content;
+  l.next = String(fd.get('next') || '').trim();
+  if(newLevelFrom != null){ l.levelFrom = newLevelFrom; l.levelTo = newLevelTo; }
+  else { delete l.levelFrom; delete l.levelTo; }
+  if(newClubFrom != null){ l.clubFrom = newClubFrom; l.clubTo = newClubTo; }
+  else { delete l.clubFrom; delete l.clubTo; }
+
+  var studentTouched = false;
+  if(String(oldLevelTo) !== String(newLevelTo) && oldLevelTo != null && Number(s.level) === oldLevelTo){
+    var tlv = lastChangeOf(s.id, 'levelTo');
+    if(tlv != null && Number(tlv) !== Number(s.level)){ s.level = Number(tlv); studentTouched = true; }
+  }
+  if(String(oldClubTo) !== String(newClubTo) && oldClubTo != null && s.club === oldClubTo){
+    var tcb = lastChangeOf(s.id, 'clubTo');
+    if(tcb && tcb !== s.club){ s.club = tcb; studentTouched = true; }
+  }
+
+  persist();
+  closeSheet();
+  render();
+  toast(studentTouched ? '레슨 기록을 수정 · 회원 정보도 함께 업데이트' : '레슨 기록을 수정했어요');
+  dbUpdateLesson(l);
+  if(studentTouched) dbSaveStudent(s);
 }
 
 function handleProsSubmit(form){
