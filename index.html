@@ -1928,13 +1928,21 @@ function handleLessonEditSubmit(form){
   else { delete l.clubFrom; delete l.clubTo; }
 
   var studentTouched = false;
-  if(String(oldLevelTo) !== String(newLevelTo) && oldLevelTo != null && Number(s.level) === oldLevelTo){
-    var tlv = lastChangeOf(s.id, 'levelTo');
-    if(tlv != null && Number(tlv) !== Number(s.level)){ s.level = Number(tlv); studentTouched = true; }
+  if(String(oldLevelTo) !== String(newLevelTo)){
+    var lvMatches = (oldLevelTo != null && Number(s.level) === oldLevelTo) ||
+                    (newLevelFrom != null && Number(s.level) === newLevelFrom);
+    if(lvMatches){
+      var tlv = lastChangeOf(s.id, 'levelTo');
+      if(tlv != null && Number(tlv) !== Number(s.level)){ s.level = Number(tlv); studentTouched = true; }
+    }
   }
-  if(String(oldClubTo) !== String(newClubTo) && oldClubTo != null && s.club === oldClubTo){
-    var tcb = lastChangeOf(s.id, 'clubTo');
-    if(tcb && tcb !== s.club){ s.club = tcb; studentTouched = true; }
+  if(String(oldClubTo) !== String(newClubTo)){
+    var cbMatches = (oldClubTo != null && s.club === oldClubTo) ||
+                    (newClubFrom != null && s.club === newClubFrom);
+    if(cbMatches){
+      var tcb = lastChangeOf(s.id, 'clubTo');
+      if(tcb && tcb !== s.club){ s.club = tcb; studentTouched = true; }
+    }
   }
 
   persist();
